@@ -22,20 +22,25 @@ export interface User {
 
 type ImagePosition = 'start' | 'end';
 interface Image {
-	url: string,
-	position: ImagePosition,
+	url: string;
+	position: ImagePosition;
 }
 
 interface Paragraph {
-	subtitle?: string,
-	image?: Image,
-	text: string,
+	subtitle?: string;
+	image?: Image;
+	text: string;
 }
 export interface BlogEntry {
-	id: ObjectId,
-	author: ObjectId,
-	theme: string,
-	createdAt: string,
-	title: string,
-	paragraphs: Paragraph[],
+	id: ObjectId;
+	author: ObjectId;
+	theme: string;
+	createdAt: string;
+	title: string;
+	paragraphs: Paragraph[];
+}
+
+
+export interface DeletedBlogEntry extends BlogEntry {
+	deleteIn: string;
 }

@@ -57,6 +57,7 @@ export const typeDefs = gql`
 	}
 
 	input BlogInput {
+		id: ID
 		author: String!
 		theme: String!
 		title: String!
@@ -70,11 +71,15 @@ export const typeDefs = gql`
 
 		# Blog
 		newBlogEntry(blogInput: BlogInput): BlogEntry
+		updateBlogEntry(blogInput: BlogInput): BlogEntry
+		deleteBlogEntry(blogId: String): String
+		recoverDeletedBlogEntry(blogId: String): BlogEntry
 	}
 
 	type Query {
 		getUserInfo(token:String!): User
 		getSpecificBlogEntry(blogId:String!): BlogEntry
 		getRecentEntries: [BlogEntry]
+		getEntriesByAuthor(authorId:String!): [BlogEntry]
 	}
 `;

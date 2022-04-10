@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { ApolloServer } from 'apollo-server';
-import { typeDefs } from './db/schema';
-import { resolvers } from './db/resolvers';
+import { typeDefs } from './gql/schema';
+import { resolvers } from './gql/resolvers';
 import { dbConnection } from './db';
 import { ServerStatus } from './types/sharedTypes';
 
