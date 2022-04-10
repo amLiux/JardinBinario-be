@@ -1,11 +1,10 @@
 import { findUserById } from '../helpers/findUserById';
 import { BlogEntryModel, RecentlyDeletedBlogEntryModel } from '../models/BlogEntry'
-import { BlogEntry } from '../types/sharedTypes';
+import { BlogEntry, CustomContext } from '../types/sharedTypes';
 
 interface BlogInput {
 	blogInput: {
-		id?: string;
-		author: string;
+		id: string;
 		theme: BlogEntry['theme'];
 		title: BlogEntry['author'];
 		paragraphs: BlogEntry['paragraphs'];
@@ -16,10 +15,21 @@ const queryFailureMsg = 'There was an issue while querying the BlogEntries:';
 
 export const BlogResolvers = {
 	Query: {
+		// TODO implement top 4 with most views
+		// TODO implement get by tags and maybe get by theme too
 		getRecentEntries: async (): Promise<BlogEntry[]> => {
 			try {
 				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4);
 				return latestBlogs;
+			} catch (err) {
+				console.error(err);
+				throw new Error(`${queryFailureMsg}${err}`)
+			}
+		},
+		getDeletedEntries: async (): Promise<BlogEntry[]> => {
+			try {
+				const latestDeletedBlogs = await RecentlyDeletedBlogEntryModel.find().sort({ _id: -1 }).limit(15);
+				return latestDeletedBlogs;
 			} catch (err) {
 				console.error(err);
 				throw new Error(`${queryFailureMsg}${err}`)
@@ -55,10 +65,17 @@ export const BlogResolvers = {
 		},
 	},
 	Mutation: {
-		newBlogEntry: async (_: any, { blogInput }: BlogInput): Promise<BlogEntry> => {
-			const { author, paragraphs } = blogInput;
+		newBlogEntry: async (_: any, { blogInput }: BlogInput, ctx: CustomContext): Promise<BlogEntry> => {
+			const { paragraphs } = blogInput;
+			const { User } = ctx;
 
-			const Author = await findUserById(author);
+			if(!User) {
+				throw new Error('Please provide an author');
+			}
+
+			console.log(User);
+
+			const Author = await findUserById(String(User.id));
 
 			if (!paragraphs[0]) {
 				throw new Error('You should add at least one paragraph to your Blog Entry');
@@ -69,7 +86,7 @@ export const BlogResolvers = {
 			}
 
 			try {
-				const newBlogEntry = await new BlogEntryModel(blogInput).save();
+				const newBlogEntry = await new BlogEntryModel({...blogInput, author: User.id}).save();
 				return newBlogEntry;
 			} catch (err) {
 				console.error(err);
@@ -115,7 +132,7 @@ export const BlogResolvers = {
 				return recoveredBlogEntry;
 			} catch (err) {
 				console.error(err);
-				throw new Error('There was an issue deleting the Blog Entry.');
+				throw new Error('There was an issue recovering the Blog Entry.');
 			}
 		},
 	}

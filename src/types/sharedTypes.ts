@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+import { Context } from 'apollo-server-core';
 
 export interface ServerStatus {
 	connected: boolean;
@@ -43,4 +44,13 @@ export interface BlogEntry {
 
 export interface DeletedBlogEntry extends BlogEntry {
 	deleteIn: string;
+}
+
+export interface CustomContext extends Context {
+	requestId: string;
+	User?: User;
+}
+
+export interface TaggedContext extends Context {
+	requestId: string;
 }

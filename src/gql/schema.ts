@@ -56,9 +56,10 @@ export const typeDefs = gql`
 		paragraphs: [Paragraph!]!
 	}
 
+	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
+
 	input BlogInput {
 		id: ID
-		author: String!
 		theme: String!
 		title: String!
 		paragraphs: [ParagraphInput!]!
@@ -80,6 +81,7 @@ export const typeDefs = gql`
 		getUserInfo(token:String!): User
 		getSpecificBlogEntry(blogId:String!): BlogEntry
 		getRecentEntries: [BlogEntry]
+		getDeletedEntries: [BlogEntry]
 		getEntriesByAuthor(authorId:String!): [BlogEntry]
 	}
 `;
