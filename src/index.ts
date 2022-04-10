@@ -1,5 +1,5 @@
-import { JardinBinarioServer } from "./JardinBinario";
-import { ServerStatus } from "./types/sharedTypes";
+import { JardinBinarioServer } from './JardinBinario';
+import { ServerStatus } from './types/sharedTypes';
 const server = new JardinBinarioServer();
 
 server.listen().then(({connected, message}:ServerStatus) => {
