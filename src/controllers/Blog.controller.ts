@@ -1,4 +1,5 @@
 import { findUserById } from '../helpers/findUserById';
+import { Errors, generateErrorObject } from '../helpers/Logger';
 import { BlogEntryModel, RecentlyDeletedBlogEntryModel } from '../models/BlogEntry'
 import { BlogEntry, CustomContext } from '../types/sharedTypes';
 
@@ -11,56 +12,50 @@ interface BlogInput {
 	}
 }
 
-const queryFailureMsg = 'There was an issue while querying the BlogEntries:';
-
 export const BlogResolvers = {
 	Query: {
 		// TODO implement top 4 with most views
 		// TODO implement get by tags and maybe get by theme too
-		getRecentEntries: async (): Promise<BlogEntry[]> => {
+		getRecentEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
 			try {
 				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4);
 				return latestBlogs;
 			} catch (err) {
-				console.error(err);
-				throw new Error(`${queryFailureMsg}${err}`)
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getDeletedEntries: async (): Promise<BlogEntry[]> => {
+		getDeletedEntries: async (_: any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
 			try {
 				const latestDeletedBlogs = await RecentlyDeletedBlogEntryModel.find().sort({ _id: -1 }).limit(15);
 				return latestDeletedBlogs;
 			} catch (err) {
-				console.error(err);
-				throw new Error(`${queryFailureMsg}${err}`)
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getEntriesByAuthor: async (_: any, { authorId }: Record<string, string>): Promise<BlogEntry[]> => {
+		getEntriesByAuthor: async (_: any, { authorId }: Record<string, string>, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
 				const BlogEntriesByAuthor = await BlogEntryModel.find({ author: authorId });
 
 				if (!BlogEntriesByAuthor) {
-					throw new Error(`There were no valid BlogEntries with for ${authorId}!`)
+					throw await generateErrorObject(Errors.NOT_FOUND, `There were no valid BlogEntries with for ${authorId}!`, ctx);
 				}
 
 				return BlogEntriesByAuthor;
 			} catch (err) {
-				console.error(err);
-				throw new Error(`${queryFailureMsg}${err}`);
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>): Promise<BlogEntry> => {
+		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<BlogEntry> => {
 			try {
 				const BlogEntry = await BlogEntryModel.findById(blogId);
 
 				if (!BlogEntry) {
-					throw new Error(`There was no valid BlogEntry with id ${blogId}!`)
+					throw await generateErrorObject(Errors.NOT_FOUND, `There was no valid BlogEntry with id ${blogId}!`, ctx);
 				}
 
 				return BlogEntry;
 			} catch (err) {
-				console.error(err);
-				throw new Error(`${queryFailureMsg}${err}`);
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
 	},
@@ -69,61 +64,56 @@ export const BlogResolvers = {
 			const { paragraphs } = blogInput;
 			const { User } = ctx;
 
-			if(!User) {
-				throw new Error('Please provide an author');
-			}
-
-			console.log(User);
-
-			const Author = await findUserById(String(User.id));
-
 			if (!paragraphs[0]) {
-				throw new Error('You should add at least one paragraph to your Blog Entry');
+				throw await generateErrorObject(Errors.WRONG_INPUT, 'You should add at least one paragraph to your Blog Entry', ctx);
 			}
+
+			const Author = await findUserById(String(User?.id));
 
 			if (!Author) {
-				throw new Error('The author is not valid!');
+				throw await generateErrorObject(Errors.UNKOWN_USER, 'The author is not valid.', ctx);
 			}
 
 			try {
-				const newBlogEntry = await new BlogEntryModel({...blogInput, author: User.id}).save();
+				const newBlogEntry = await new BlogEntryModel({...blogInput, author: User?.id}).save();
 				return newBlogEntry;
 			} catch (err) {
-				console.error(err);
-				throw new Error('There was an issue creating the Blog Entry.');
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		updateBlogEntry: async (_: any, { blogInput }: BlogInput): Promise<BlogEntry> => {
+		updateBlogEntry: async (_: any, { blogInput }: BlogInput, ctx:CustomContext): Promise<BlogEntry> => {
 			try {
 				const { id } = blogInput;
 
+				// TODO shall we do search and then !BlogEntry to avoid casting? not sure
 				const BlogEntryToUpdate = await BlogEntryModel.findOneAndUpdate({ _id: id }, blogInput, {
 					new: true,
 				});
 
 				return <BlogEntry>BlogEntryToUpdate;
 			} catch (err) {
-				console.error(err);
-				throw new Error('There was an issue updating the Blog Entry.');
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		deleteBlogEntry: async (_: any, { blogId }: Record<string, string>): Promise<string> => {
+		deleteBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<string> => {
 			try {
 				const deletedBlogEntry = await BlogEntryModel.findOneAndRemove({ _id: blogId });
+
 				if (!deletedBlogEntry) {
-					throw new Error('There was no BlogEntry to delete');
+					throw await generateErrorObject(Errors.NOT_FOUND, 'There was no BlogEntry to delete', ctx);
 				}
+
 				return deletedBlogEntry.id;
 			} catch (err) {
-				console.error(err);
-				throw new Error('There was an issue deleting the Blog Entry.');
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		recoverDeletedBlogEntry: async (_: any, { blogId }: Record<string, string>): Promise<BlogEntry> => {
+		recoverDeletedBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx: CustomContext): Promise<BlogEntry> => {
 			try {
 				const deletedBlogEntry = await RecentlyDeletedBlogEntryModel.findById(blogId);
+
 				if (!deletedBlogEntry) {
-					throw new Error('There was no BlogEntry to recover');
+					throw await generateErrorObject(Errors.NOT_FOUND, 'There was no BlogEntry to recover', ctx);
 				}
 
 				const { paragraphs, title, author, theme, createdAt } = deletedBlogEntry;
@@ -131,8 +121,7 @@ export const BlogResolvers = {
 
 				return recoveredBlogEntry;
 			} catch (err) {
-				console.error(err);
-				throw new Error('There was an issue recovering the Blog Entry.');
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
 	}

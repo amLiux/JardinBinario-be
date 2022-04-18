@@ -65,10 +65,19 @@ export const typeDefs = gql`
 		paragraphs: [ParagraphInput!]!
 	}
 
+	input ForgotPasswordInput {
+		email: String!
+		token: String!
+		time: String!
+		newPassword: String!
+	}
+
 	type Mutation {
 		# Authentication
 		newUser(userInput: UserInput): User
 		authenticate(authInput: AuthInput): Token
+		initForgotPassword(email: String): String
+		finishForgotPassword(forgotPasswordInput: ForgotPasswordInput): User
 
 		# Blog
 		newBlogEntry(blogInput: BlogInput): BlogEntry

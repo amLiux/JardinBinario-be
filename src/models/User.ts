@@ -16,7 +16,8 @@ const UserSchema = new Schema<User>({
 	},
 	email: {
 		type: String,
-		required: true
+		required: true,
+		unique: true,
 	},
 	// avatar: String,
 	role: String,
@@ -27,19 +28,35 @@ const UserSchema = new Schema<User>({
 	createdAt: {
 		type: String,
 		default: new Date().toUTCString(),
-	}
+	},
+	tempPassword: String,
+	tempPasswordTime: String,
 });
 
 // Methods
-UserSchema.methods.checkPassword = function(password:string):boolean {
+UserSchema.methods.checkPassword = function (password: string, isTempPassword?: boolean): boolean {
+	if (isTempPassword) return compareSync(password, this.tempPassword);
 	return compareSync(password, this.password);
 }
 
 // Middlewares
-UserSchema.pre('save', async function (next: ()=> void) {
-	if (this.isModified('password')) {
+UserSchema.pre('save', async function (next: () => void) {
+
+	const hashString = async (toHash: string) => {
 		const salt = await genSalt(10);
-		this.password = await hash(String(this.password), salt);
+		return await hash(String(toHash), salt);
+	}
+
+	if (this.isModified('password')) {
+		const hashedPassword = await hashString(String(this.password));
+		this.password = hashedPassword;
+		next();
+	}
+
+	if (this.isModified('tempPassword') && this.tempPassword !== undefined) {
+		const hashedPassword = await hashString(String(this.tempPassword));
+		this.tempPassword = hashedPassword;
+		this.tempPasswordTime = new Date().toUTCString();
 		next();
 	}
 });

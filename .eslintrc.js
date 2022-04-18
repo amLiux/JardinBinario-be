@@ -13,7 +13,9 @@ module.exports = {
 		'import/prefer-default-export': 'off',
 		'no-tabs': 0,
 		'max-len': 0,
-		indent: ['error', 'tab'],
+		indent: ['error', 'tab', {
+			SwitchCase: 1
+		}],
 		'no-prototype-builtins': 0,
 		'linebreak-style': 'off',
 		'arrow-body-style': 0,

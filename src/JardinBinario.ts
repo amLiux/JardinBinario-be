@@ -17,7 +17,8 @@ export class JardinBinarioServer {
 					const customContext = await getCustomContext(req);
 					return customContext;
 				} catch(err) {
-					throw new Error('There was an error building the context');
+					const error = err as Error;
+					throw new Error(error.message);
 				}
 			}
 		});

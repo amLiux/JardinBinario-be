@@ -18,7 +18,10 @@ export interface User {
 	role: string;
 	password?: string;
 	createdAt: string;
-	checkPassword?: (password:User['password']) => boolean;
+	tempPassword?: string;
+	tempPasswordTime?: string;
+	checkPassword: (password:User['password'] | User['tempPassword'], isTempPassword?:boolean) => boolean;
+	save: () => Promise<User>
 }
 
 type ImagePosition = 'start' | 'end';
@@ -46,11 +49,11 @@ export interface DeletedBlogEntry extends BlogEntry {
 	deleteIn: string;
 }
 
-export interface CustomContext extends Context {
-	requestId: string;
+export interface CustomContext extends TaggedContext{
 	User?: User;
 }
 
 export interface TaggedContext extends Context {
 	requestId: string;
+	query: string;
 }
