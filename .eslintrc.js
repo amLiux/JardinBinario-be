@@ -7,7 +7,7 @@ module.exports = {
 		es2021: true,
 		jest: true,
 	},
-	ignorePatterns: ['lib', 'tests/lambdas/*.js', 'tests/manuel/*.js', 'app/**/*.js', 'documentation'],
+	ignorePatterns: ['build/**/*.js'],
 	rules: {
 		'no-console': 'off',
 		'import/prefer-default-export': 'off',

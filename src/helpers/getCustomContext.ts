@@ -9,14 +9,13 @@ const queriesThatDontRequireAuthentication = [
 	'introspectionquery',
 	'initforgotpassword',
 	'finishforgotpassword',
-	'anything else'
 ];
 
 const getQueryName = (body: any): string => {
 	let { query: unparsedQuery } = body;
 	unparsedQuery = unparsedQuery.trim();
 	const type = unparsedQuery.split(" ")[0];
-
+	
 	switch (type) {
 		case 'mutation': {
 			const queryWithoutType = unparsedQuery.substring(9);
@@ -43,18 +42,18 @@ const getQueryName = (body: any): string => {
 	}
 };
 
-export const getCustomContext = async (req: Request): Promise<CustomContext> => {
-	const token = req.headers['authorization'] || '';
-	const query = getQueryName(req.body);
+export const getCustomContext = async (req: Request): Promise<CustomContext | TaggedContext> => {
+	const token = req.headers?.['authorization'] || '';
+	const tokenWithoutBearer = token.replace('Bearer', '').trim();
+	const query = req.body?.operationName || getQueryName(req.body);
 	const taggedContext = initContextTagging(query);
 
-	if (!token) {
-		if (queriesThatDontRequireAuthentication.includes(query.toLowerCase())) return taggedContext;
-		throw new Error('A verification token is required');
-	}
+	if (queriesThatDontRequireAuthentication.includes(query.toLowerCase())) return taggedContext;
+
+	if (!token || tokenWithoutBearer === '') throw new Error('A verification token is required');
 
 	try {
-		const User = await verifyJWT(token);
+		const User = await verifyJWT(tokenWithoutBearer);
 
 		if (!User) {
 			throw await generateErrorObject(Errors.UNKOWN_USER, 'Not a valid user', taggedContext);

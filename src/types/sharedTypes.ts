@@ -50,7 +50,7 @@ export interface DeletedBlogEntry extends BlogEntry {
 }
 
 export interface CustomContext extends TaggedContext{
-	User?: User;
+	User: User;
 }
 
 export interface TaggedContext extends Context {

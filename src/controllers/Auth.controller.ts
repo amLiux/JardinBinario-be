@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { generateJWT, verifyJWT } from '../helpers/authFunctions';
+import { generateJWT } from '../helpers/authFunctions';
 import { findUserByEmail } from '../helpers/findUserByEmail';
 import { Errors, generateErrorObject } from '../helpers/Logger';
 import { UserModel } from '../models/User';
@@ -33,10 +33,9 @@ interface ForgotPasswordInput {
 
 export const AuthResolvers = {
 	Query: {
-		getUserInfo: async (_: any, { token }: Record<string, string>, ctx: CustomContext): Promise<User> => {
+		getUserInfo: async (_: any, __: any, ctx: CustomContext): Promise<User> => {
 			try {
-				const payload = await verifyJWT(token);
-				return payload;
+				return ctx?.User;
 			} catch (err) {
 				const error = await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(err), ctx);
 				throw error;

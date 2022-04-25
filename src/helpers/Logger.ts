@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CustomContext } from '../types/sharedTypes';
+import { CustomContext, TaggedContext } from '../types/sharedTypes';
 
 interface InternalError {
 	code: string;
@@ -71,7 +71,7 @@ const generateSlackCard = (error: InternalError, message: string, requestId: str
 	]
 });
 
-export const generateErrorObject = async (error: InternalError, message: string, ctx: CustomContext): Promise<Error> => {
+export const generateErrorObject = async (error: InternalError, message: string, ctx: CustomContext | TaggedContext): Promise<Error> => {
 	const { requestId, query } = ctx;
 
 	if (error.notify) {

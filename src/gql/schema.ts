@@ -87,7 +87,7 @@ export const typeDefs = gql`
 	}
 
 	type Query {
-		getUserInfo(token:String!): User
+		getUserInfo: User
 		getSpecificBlogEntry(blogId:String!): BlogEntry
 		getRecentEntries: [BlogEntry]
 		getDeletedEntries: [BlogEntry]
