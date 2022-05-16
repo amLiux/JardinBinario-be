@@ -50,7 +50,7 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 
 	if (queriesThatDontRequireAuthentication.includes(query.toLowerCase())) return taggedContext;
 
-	if (!token || tokenWithoutBearer === '') throw new Error('A verification token is required');
+	if (!token || tokenWithoutBearer === '') throw new Error('A verification token is required.');
 
 	try {
 		const User = await verifyJWT(tokenWithoutBearer);
@@ -65,7 +65,13 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 		};
 
 	} catch (err) {
-		throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(err), taggedContext);
+		let error = err as Error;
+
+		if(error.message === 'jwt expired') {
+			error = 'Session expired.' as any;
+		}
+
+		throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(error), taggedContext);
 	}
 
 };

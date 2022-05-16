@@ -59,15 +59,14 @@ export const typeDefs = gql`
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
 
 	input BlogInput {
-		id: ID
-		theme: String!
 		title: String!
-		paragraphs: [ParagraphInput!]!
+		markdown: String!
+		tags: [String]
 	}
 
 	input ForgotPasswordInput {
 		email: String!
-		token: String!
+		otp: String!
 		time: String!
 		newPassword: String!
 	}

@@ -1,13 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { BlogEntry, DeletedBlogEntry } from '../types/sharedTypes';
 
-const validImagePositions = {
-	values: ['start', 'end'],
-	message: '{VALUE} is not a valid position'
-};
-
-const arrayLimit = (val: any[]) => val.length <= 2;
-
 const getToday = () => new Date().getDate();
 
 // TODO add views and tags
@@ -23,31 +16,15 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 		type: Schema.Types.ObjectId,
 		ref: 'users'
 	},
-	theme: {
-		type: String,
-		required: true,
-	},
+	tags: [String],
 	createdAt: {
 		type: String,
 		default: new Date().toUTCString(),
 	},
-	paragraphs: [{
-		subtitle: String,
-		image: {
-			type: [{
-				url: String,
-				position: {
-					enum: validImagePositions,
-					type: String,
-				}
-			}],
-			validate: [arrayLimit, '{PATH} exceeds the limit of 2'],
-		},
-		text: {
-			type: String,
-			required: true,
-		},
-	}]
+	markdown: {
+		type: String,
+		required: true,
+	}
 });
 
 // Middlewares
@@ -58,8 +35,8 @@ BlogEntrySchema.post('save', async function (_) {
 
 BlogEntrySchema.post('findOneAndRemove', async function (doc: BlogEntry, next) {
 	try {
-		const { paragraphs, theme, title, author, createdAt } = doc;
-		const deletedBlogEntry = new RecentlyDeletedBlogEntryModel({ paragraphs, theme, title, author, createdAt });
+		const { markdown, tags, title, author, createdAt } = doc;
+		const deletedBlogEntry = new RecentlyDeletedBlogEntryModel({ markdown, tags, title, author, createdAt });
 		await deletedBlogEntry.save();
 	} catch (err) {
 		next(err as any);
