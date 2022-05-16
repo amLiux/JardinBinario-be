@@ -23,25 +23,13 @@ export interface User {
 	checkPassword: (password:User['password'] | User['tempPassword'], isTempPassword?:boolean) => boolean;
 	save: () => Promise<User>
 }
-
-type ImagePosition = 'start' | 'end';
-interface Image {
-	url: string;
-	position: ImagePosition;
-}
-
-interface Paragraph {
-	subtitle?: string;
-	image?: Image;
-	text: string;
-}
 export interface BlogEntry {
 	id: ObjectId;
 	author: ObjectId;
-	theme: string;
+	tags?: string[];
 	createdAt: string;
 	title: string;
-	paragraphs: Paragraph[];
+	markdown: string;
 }
 
 

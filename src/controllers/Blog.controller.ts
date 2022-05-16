@@ -5,10 +5,10 @@ import { BlogEntry, CustomContext } from '../types/sharedTypes';
 
 interface BlogInput {
 	blogInput: {
-		id: string;
-		theme: BlogEntry['theme'];
+		id?: string;
+		tags: BlogEntry['tags'];
 		title: BlogEntry['author'];
-		paragraphs: BlogEntry['paragraphs'];
+		markdown: BlogEntry['markdown'];
 	}
 }
 
@@ -61,10 +61,11 @@ export const BlogResolvers = {
 	},
 	Mutation: {
 		newBlogEntry: async (_: any, { blogInput }: BlogInput, ctx: CustomContext): Promise<BlogEntry> => {
-			const { paragraphs } = blogInput;
+			const { markdown } = blogInput;
 			const { User } = ctx;
-
-			if (!paragraphs[0]) {
+			console.log(markdown.trim());
+			console.log(User);
+			if (markdown.trim().length <= 0) {
 				throw await generateErrorObject(Errors.WRONG_INPUT, 'You should add at least one paragraph to your Blog Entry', ctx);
 			}
 
@@ -116,8 +117,8 @@ export const BlogResolvers = {
 					throw await generateErrorObject(Errors.NOT_FOUND, 'There was no BlogEntry to recover', ctx);
 				}
 
-				const { paragraphs, title, author, theme, createdAt } = deletedBlogEntry;
-				const recoveredBlogEntry = await new BlogEntryModel({ paragraphs, title, author, theme, createdAt }).save();
+				const { markdown, title, author, tags, createdAt } = deletedBlogEntry;
+				const recoveredBlogEntry = await new BlogEntryModel({ markdown, title, author, tags, createdAt }).save();
 
 				return recoveredBlogEntry;
 			} catch (err) {

@@ -24,7 +24,7 @@ interface UserInput {
 interface ForgotPasswordInput {
 	forgotPasswordInput: {
 		email: User['email'];
-		token: User['tempPassword'];
+		otp: User['tempPassword'];
 		time: User['tempPasswordTime'];
 		newPassword: User['password'];
 	}
@@ -77,11 +77,12 @@ export const AuthResolvers = {
 					String(process.env.PRIVATE_KEY),
 					String(process.env.EXPIRATION_TIME)
 				);
-
+				console.log(token);
 				return {
 					token,
 				};
 			} catch (err) {
+				console.log(err);
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(err), ctx);
 			}
 		},
@@ -109,7 +110,8 @@ export const AuthResolvers = {
 			}
 		},
 		finishForgotPassword: async (_: any, { forgotPasswordInput }: ForgotPasswordInput, ctx: CustomContext): Promise<User> => {
-			const { email, token, newPassword, time } = forgotPasswordInput;
+
+			const { email, otp, newPassword, time } = forgotPasswordInput;
 			const User = await findUserByEmail(email);
 
 			if (!User) {
@@ -123,7 +125,7 @@ export const AuthResolvers = {
 				throw await generateErrorObject(Errors.TIMEOUT, 'The code used has expired.', ctx);
 			}
 
-			if (!User.checkPassword(token, true)) {
+			if (!User.checkPassword(otp, true)) {
 				throw await generateErrorObject(Errors.UNAUTHORIZED, 'The code provided is invalid.', ctx);
 			}
 
