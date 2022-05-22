@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "postinstall": "npm run build",
     "start": "node build/index.js",
     "start:js": "npm run build && node build/index.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
