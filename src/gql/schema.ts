@@ -47,13 +47,20 @@ export const typeDefs = gql`
 		text: String!
 	}
 
+	type Author {
+		_id: ID
+		name: String
+		lastName: String
+		email: String
+	}
+
 	type BlogEntry {
 		id: ID
-		author: ID
-		theme: String
+		author: Author
+		tags: [String]
 		createdAt: String
 		title: String
-		paragraphs: [Paragraph!]!
+		markdown: String
 	}
 
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations

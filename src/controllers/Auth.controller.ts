@@ -77,7 +77,6 @@ export const AuthResolvers = {
 					String(process.env.PRIVATE_KEY),
 					String(process.env.EXPIRATION_TIME)
 				);
-				console.log(token);
 				return {
 					token,
 				};
