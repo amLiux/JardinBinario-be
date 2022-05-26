@@ -47,7 +47,7 @@ export const BlogResolvers = {
 		},
 		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<BlogEntry> => {
 			try {
-				const BlogEntry = await BlogEntryModel.findById(blogId);
+				const BlogEntry = await BlogEntryModel.findById(blogId).populate('author', 'lastName email name');
 
 				if (!BlogEntry) {
 					throw await generateErrorObject(Errors.NOT_FOUND, `There was no valid BlogEntry with id ${blogId}!`, ctx);
@@ -63,8 +63,7 @@ export const BlogResolvers = {
 		newBlogEntry: async (_: any, { blogInput }: BlogInput, ctx: CustomContext): Promise<BlogEntry> => {
 			const { markdown } = blogInput;
 			const { User } = ctx;
-			console.log(markdown.trim());
-			console.log(User);
+			
 			if (markdown.trim().length <= 0) {
 				throw await generateErrorObject(Errors.WRONG_INPUT, 'You should add at least one paragraph to your Blog Entry', ctx);
 			}
