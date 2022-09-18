@@ -10,7 +10,9 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "dev:ts": "nodemon src/index.ts",
     "jest:ts": "jest",
-    "husky:setup": "husky install && npx husky add .husky/pre-commit 'npm run lint' && npx husky add .husky/pre-push 'npm run lint\nnpm run jest:ts'"
+    "pre-commit-husky": "npx husky add .husky/pre-commit 'npm run lint'",
+    "pre-push-husky": "npx husky add .husky/pre-push 'npm run lint\nnpm run jest:ts'",
+    "husky:setup": "husky install && npm run pre-commit-husky && npm run pre-push-husky"
   },
   "author": "",
   "license": "ISC",
