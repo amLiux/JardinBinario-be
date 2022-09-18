@@ -12,6 +12,7 @@ export class JardinBinarioServer {
 		this.app = new ApolloServer({
 			typeDefs,
 			resolvers,
+			// TODO start planning on injecting locale from next on getCustomContext to localize the backend messages sent to front-end
 			context: async ({ req }) => {
 				try {
 					const customContext = await getCustomContext(req);
