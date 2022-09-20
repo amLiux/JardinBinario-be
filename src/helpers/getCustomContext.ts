@@ -9,14 +9,15 @@ const queriesThatDontRequireAuthentication = [
 	'introspectionquery',
 	'initforgotpassword',
 	'finishforgotpassword',
-	'getspecificblogentry'
+	'getspecificblogentry',
+	'newticket'
 ];
 
 const getQueryName = (body: any): string => {
 	let { query: unparsedQuery } = body;
 	unparsedQuery = unparsedQuery.trim();
 	const type = unparsedQuery.split(" ")[0];
-	
+
 	switch (type) {
 		case 'mutation': {
 			const queryWithoutType = unparsedQuery.substring(9);
@@ -29,7 +30,7 @@ const getQueryName = (body: any): string => {
 			const parenthesis = queryWithoutType.indexOf('(');
 			const curlyBrace = queryWithoutType.indexOf('{');
 
-			if(parenthesis > 0 && parenthesis < curlyBrace) {
+			if (parenthesis > 0 && parenthesis < curlyBrace) {
 				toReturn = queryWithoutType.substring(0, queryWithoutType.indexOf('('));
 			} else {
 				toReturn = queryWithoutType.substring(0, queryWithoutType.indexOf('{'));
@@ -48,7 +49,7 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 	const tokenWithoutBearer = token.replace('Bearer', '').trim();
 	const query = req.body?.operationName || getQueryName(req.body);
 	const taggedContext = initContextTagging(query);
-
+	console.log(query);
 	if (queriesThatDontRequireAuthentication.includes(query.toLowerCase())) return taggedContext;
 
 	if (!token || tokenWithoutBearer === '') throw new Error('A verification token is required.');
@@ -68,7 +69,7 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 	} catch (err) {
 		let error = err as Error;
 
-		if(error.message === 'jwt expired') {
+		if (error.message === 'jwt expired') {
 			error = 'Session expired.' as any;
 		}
 

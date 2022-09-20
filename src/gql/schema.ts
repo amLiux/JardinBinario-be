@@ -1,6 +1,5 @@
 import { gql } from 'apollo-server';
 
-
 export const typeDefs = gql` 
 	type User {
 		id: ID
@@ -63,12 +62,29 @@ export const typeDefs = gql`
 		markdown: String
 	}
 
+	type Ticket {
+		id: ID
+		companyName: String
+		email: String
+		description: String
+		service: [String]
+		phoneNumber: String
+	}
+
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
 
 	input BlogInput {
 		title: String!
 		markdown: String!
 		tags: [String]
+	}
+
+	input TicketInput {
+		companyName: String!
+		email: String!
+		description: String!
+		service: [String]
+		phoneNumber: String
 	}
 
 	input ForgotPasswordInput {
@@ -90,6 +106,10 @@ export const typeDefs = gql`
 		updateBlogEntry(blogInput: BlogInput): BlogEntry
 		deleteBlogEntry(blogId: String): String
 		recoverDeletedBlogEntry(blogId: String): BlogEntry
+
+		# Ticket
+		newTicket(ticketInput: TicketInput): Ticket
+		updateTicket(ticketInput: TicketInput): Ticket
 	}
 
 	type Query {
@@ -98,5 +118,6 @@ export const typeDefs = gql`
 		getRecentEntries: [BlogEntry]
 		getDeletedEntries: [BlogEntry]
 		getEntriesByAuthor(authorId:String!): [BlogEntry]
+		getOpenTickets: [Ticket]
 	}
 `;
