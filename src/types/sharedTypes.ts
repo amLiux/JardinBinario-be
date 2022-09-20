@@ -32,6 +32,17 @@ export interface BlogEntry {
 	markdown: string;
 }
 
+export interface Ticket {
+	id: ObjectId;
+	status: 'open' | 'closed' | 'in progress';
+	companyName: string;
+	service: string[];
+	email: string;
+	description: string;
+	phoneNumber: string;
+	createdAt: string;
+}
+
 
 export interface DeletedBlogEntry extends BlogEntry {
 	deleteIn: string;
