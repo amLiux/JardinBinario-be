@@ -43,6 +43,12 @@ export interface Ticket {
 	createdAt: string;
 }
 
+export interface NewsletterEntry {
+	id: ObjectId;
+	email: string;
+	status: 'subscribed' | 'unsubscribed';
+}
+
 
 export interface DeletedBlogEntry extends BlogEntry {
 	deleteIn: string;
