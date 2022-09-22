@@ -71,6 +71,12 @@ export const typeDefs = gql`
 		phoneNumber: String
 	}
 
+	type NewsletterEntry {
+		id: ID
+		email: String
+		status: String
+	}
+
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
 
 	input BlogInput {
@@ -85,6 +91,10 @@ export const typeDefs = gql`
 		description: String!
 		service: [String]
 		phoneNumber: String
+	}
+
+	input NewsletterInput {
+		email: String!
 	}
 
 	input ForgotPasswordInput {
@@ -110,6 +120,11 @@ export const typeDefs = gql`
 		# Ticket
 		newTicket(ticketInput: TicketInput): Ticket
 		updateTicket(ticketInput: TicketInput): Ticket
+		
+		# Newsletter
+		newNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
+		updateNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
+
 	}
 
 	type Query {
@@ -119,5 +134,6 @@ export const typeDefs = gql`
 		getDeletedEntries: [BlogEntry]
 		getEntriesByAuthor(authorId:String!): [BlogEntry]
 		getOpenTickets: [Ticket]
+		getSubscribedEmails: [NewsletterEntry]
 	}
 `;

@@ -10,7 +10,8 @@ const queriesThatDontRequireAuthentication = [
 	'initforgotpassword',
 	'finishforgotpassword',
 	'getspecificblogentry',
-	'newticket'
+	'newticket',
+	'newnewsletterentry',
 ];
 
 const getQueryName = (body: any): string => {

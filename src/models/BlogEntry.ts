@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { BlogEntry, DeletedBlogEntry } from '../types/sharedTypes';
+import { NewsletterModel } from './Newsletter';
 
 const getToday = () => new Date().getDate();
 
@@ -29,6 +30,7 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 
 // Middlewares
 BlogEntrySchema.post('save', async function (_) {
+	const subscribedEmails =  await NewsletterModel.find({ status: 'subscribed' });
 	// TODO let's send an email to our subscribed emails
 	console.log(_, this);
 });
