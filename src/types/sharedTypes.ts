@@ -30,6 +30,7 @@ export interface BlogEntry {
 	createdAt: string;
 	title: string;
 	markdown: string;
+	views: number;
 }
 
 export interface Ticket {

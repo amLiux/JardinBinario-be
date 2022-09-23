@@ -12,6 +12,8 @@ const queriesThatDontRequireAuthentication = [
 	'getspecificblogentry',
 	'newticket',
 	'newnewsletterentry',
+	'getrecententries',
+	'getmostviewedentries'
 ];
 
 const getQueryName = (body: any): string => {
@@ -50,7 +52,7 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 	const tokenWithoutBearer = token.replace('Bearer', '').trim();
 	const query = req.body?.operationName || getQueryName(req.body);
 	const taggedContext = initContextTagging(query);
-	console.log(query);
+
 	if (queriesThatDontRequireAuthentication.includes(query.toLowerCase())) return taggedContext;
 
 	if (!token || tokenWithoutBearer === '') throw new Error('A verification token is required.');

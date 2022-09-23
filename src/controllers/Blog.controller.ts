@@ -14,11 +14,18 @@ interface BlogInput {
 
 export const BlogResolvers = {
 	Query: {
-		// TODO implement top 4 with most views
 		// TODO implement get by tags and maybe get by theme too
+		getMostViewedEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
+			try {
+				const latestBlogs = await BlogEntryModel.find().sort({ views : -1 }).limit(4).populate('author', 'lastName email name');
+				return latestBlogs;
+			} catch (err) {
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
+			}
+		},
 		getRecentEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4);
+				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4).populate('author', 'lastName email name');
 				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
@@ -47,7 +54,7 @@ export const BlogResolvers = {
 		},
 		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<BlogEntry> => {
 			try {
-				const BlogEntry = await BlogEntryModel.findById(blogId).populate('author', 'lastName email name');
+				const BlogEntry = await BlogEntryModel.findOne({_id: blogId}).populate('author', 'lastName email name');
 
 				if (!BlogEntry) {
 					throw await generateErrorObject(Errors.NOT_FOUND, `There was no valid BlogEntry with id ${blogId}!`, ctx);

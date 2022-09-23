@@ -60,6 +60,7 @@ export const typeDefs = gql`
 		createdAt: String
 		title: String
 		markdown: String
+		views: Int
 	}
 
 	type Ticket {
@@ -116,7 +117,6 @@ export const typeDefs = gql`
 		updateBlogEntry(blogInput: BlogInput): BlogEntry
 		deleteBlogEntry(blogId: String): String
 		recoverDeletedBlogEntry(blogId: String): BlogEntry
-
 		# Ticket
 		newTicket(ticketInput: TicketInput): Ticket
 		updateTicket(ticketInput: TicketInput): Ticket
@@ -133,6 +133,7 @@ export const typeDefs = gql`
 		getRecentEntries: [BlogEntry]
 		getDeletedEntries: [BlogEntry]
 		getEntriesByAuthor(authorId:String!): [BlogEntry]
+		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
 	}
