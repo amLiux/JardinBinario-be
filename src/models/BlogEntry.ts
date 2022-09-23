@@ -25,12 +25,16 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 	markdown: {
 		type: String,
 		required: true,
+	},
+	views: {
+		type: Number,
+		default: 0,
 	}
 });
 
 // Middlewares
 BlogEntrySchema.post('save', async function (_) {
-	const subscribedEmails =  await NewsletterModel.find({ status: 'subscribed' });
+	const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
 	// TODO let's send an email to our subscribed emails
 	console.log(_, this);
 });
@@ -43,6 +47,15 @@ BlogEntrySchema.post('findOneAndRemove', async function (doc: BlogEntry, next) {
 	} catch (err) {
 		next(err as any);
 	}
+});
+
+BlogEntrySchema.post('findOne', async function (doc: BlogEntry | any, next) {
+	try {
+		await BlogEntryModel.findOneAndUpdate({ _id: doc._id }, { views: doc.views += 1 });
+	} catch (err) {
+		next(err as any);
+	}
+	next();
 });
 
 // 2. Create a Model.
