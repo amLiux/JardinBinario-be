@@ -19,7 +19,10 @@ const UserSchema = new Schema<User>({
 		required: true,
 		unique: true,
 	},
-	// avatar: String,
+	avatar: {
+		type: String,
+		required: true,
+	},
 	role: String,
 	password: {
 		type: String,

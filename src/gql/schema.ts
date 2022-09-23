@@ -13,6 +13,7 @@ export const typeDefs = gql`
 		email: String!
 		lastName: String!
 		password: String!
+		avatar: String!
 	}
 
 	input AuthInput {
@@ -51,6 +52,7 @@ export const typeDefs = gql`
 		name: String
 		lastName: String
 		email: String
+		avatar: String
 	}
 
 	type BlogEntry {

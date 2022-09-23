@@ -17,7 +17,7 @@ export const BlogResolvers = {
 		// TODO implement get by tags and maybe get by theme too
 		getMostViewedEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ views : -1 }).limit(4).populate('author', 'lastName email name');
+				const latestBlogs = await BlogEntryModel.find().sort({ views : -1 }).limit(4).populate('author', 'lastName email name avatar');
 				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
@@ -25,7 +25,7 @@ export const BlogResolvers = {
 		},
 		getRecentEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4).populate('author', 'lastName email name');
+				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4).populate('author', 'lastName email name avatar');
 				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
@@ -54,7 +54,7 @@ export const BlogResolvers = {
 		},
 		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<BlogEntry> => {
 			try {
-				const BlogEntry = await BlogEntryModel.findOne({_id: blogId}).populate('author', 'lastName email name');
+				const BlogEntry = await BlogEntryModel.findOne({_id: blogId}).populate('author', 'lastName email name avatar');
 
 				if (!BlogEntry) {
 					throw await generateErrorObject(Errors.NOT_FOUND, `There was no valid BlogEntry with id ${blogId}!`, ctx);

@@ -14,7 +14,7 @@ export interface User {
 	name: string;
 	email: string;
 	lastName: string;
-	// avatar?: string;
+	avatar: string;
 	role: string;
 	password?: string;
 	createdAt: string;
