@@ -19,6 +19,7 @@ interface UserInput {
 		email: User['email'];
 		lastName: User['lastName'];
 		password: User['password'];
+		avatar: User['avatar'];
 	}
 }
 interface ForgotPasswordInput {
@@ -37,7 +38,7 @@ export const AuthResolvers = {
 			try {
 				return ctx?.User;
 			} catch (err) {
-				const error = await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(err), ctx);
+				const error = await generateErrorObject(Errors.SESSION_EXPIRED, String(err), ctx);
 				throw error;
 			}
 		},
@@ -81,7 +82,6 @@ export const AuthResolvers = {
 					token,
 				};
 			} catch (err) {
-				console.log(err);
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(err), ctx);
 			}
 		},

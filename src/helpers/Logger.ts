@@ -21,7 +21,7 @@ export const Errors = {
 	},
 	DUPLICATED_RECORD: {
 		code: 'DUP_RECORD',
-		notify: false,
+		notify: true,
 	},
 	NOT_FOUND: {
 		code: 'NOT_FOUND',
@@ -41,6 +41,10 @@ export const Errors = {
 	},
 	TIMEOUT: {
 		code: 'TIMEOUT',
+		notify: false,
+	},
+	SESSION_EXPIRED: {
+		code: 'SESSION_EXPIRED',
 		notify: false,
 	}
 };

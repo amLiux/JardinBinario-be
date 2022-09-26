@@ -6,6 +6,7 @@ export const typeDefs = gql`
 		name: String
 		email: String
 		lastName: String
+		avatar: String
 	}
 
 	input UserInput {
