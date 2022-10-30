@@ -7,12 +7,12 @@ RUN --mount=type=secret,id=EXPIRATION_TIME \
   --mount=type=secret,id=MONGODB_URI \
   --mount=type=secret,id=PRIVATE_KEY \
   --mount=type=secret,id=SLACK_HOOK_URL \
-   export API_ENDPOINT=$(cat /run/secrets/EXPIRATION_TIME) && \
-   export API_PASSWORD=$(cat /run/secrets/GMAIL_ACCOUNT) && \
-   export API_ENDPOINT=$(cat /run/secrets/GMAIL_PWD) && \
-   export API_ENDPOINT=$(cat /run/secrets/MONGODB_URI) && \
-   export API_ENDPOINT=$(cat /run/secrets/PRIVATE_KEY) && \
-   export API_ENDPOINT=$(cat /run/secrets/SLACK_HOOK_URL)
+   export EXPIRATION_TIME=$(cat /run/secrets/EXPIRATION_TIME) && \
+   export GMAIL_ACCOUNT=$(cat /run/secrets/GMAIL_ACCOUNT) && \
+   export GMAIL_PWD=$(cat /run/secrets/GMAIL_PWD) && \
+   export MONGODB_URI=$(cat /run/secrets/MONGODB_URI) && \
+   export PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY) && \
+   export SLACK_HOOK_URL=$(cat /run/secrets/SLACK_HOOK_URL)
 # Environment variables done
 RUN apk add --update tini
 RUN mkdir -p /usr/jardinbinario/app
