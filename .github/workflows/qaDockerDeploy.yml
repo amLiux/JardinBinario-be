@@ -19,9 +19,9 @@ jobs:
           push: true
           tags: marceliux/jardinbinario-be:qa
           secrets: | 
-            "EXPIRATION_TIME = ${{ secrets.EXPIRATION_TIME }}"
-            "GMAIL_ACCOUNT = ${{ secrets.GMAIL_ACCOUNT }}"
-            "GMAIL_PWD = ${{ secrets.GMAIL_PWD }}"
-            "MONGODB_URI = ${{ secrets.MONGODB_URI }}"
-            "PRIVATE_KEY = ${{ secrets.PRIVATE_KEY }}"
-            "SLACK_HOOK_URL = ${{ secrets.SLACK_HOOK_URL }}"
+            "EXPIRATION_TIME=${{ secrets.EXPIRATION_TIME }}"
+            "GMAIL_ACCOUNT=${{ secrets.GMAIL_ACCOUNT }}"
+            "GMAIL_PWD=${{ secrets.GMAIL_PWD }}"
+            "MONGODB_URI=${{ secrets.MONGODB_URI }}"
+            "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}"
+            "SLACK_HOOK_URL=${{ secrets.SLACK_HOOK_URL }}"
