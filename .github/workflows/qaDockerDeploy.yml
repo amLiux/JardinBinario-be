@@ -18,7 +18,7 @@ jobs:
         with:
           push: true
           tags: marceliux/jardinbinario-be:qa
-          secrets: | 
+          build-args: | 
             "EXPIRATION_TIME=${{ secrets.EXPIRATION_TIME }}"
             "GMAIL_ACCOUNT=${{ secrets.GMAIL_ACCOUNT }}"
             "GMAIL_PWD=${{ secrets.GMAIL_PWD }}"
