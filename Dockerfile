@@ -19,7 +19,14 @@ RUN --mount=type=secret,id=EXPIRATION_TIME \
   MONGODB_URI=$(cat /run/secrets/MONGODB_URI) && \
   PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY) && \
   SLACK_HOOK_URL=$(cat /run/secrets/SLACK_HOOK_URL) \
-  npm ci
+  && export EXPIRATION_TIME \
+  && export GMAIL_ACCOUNT \
+  && export GMAIL_PWD \
+  && export MONGODB_URI \
+  && export PRIVATE_KEY \
+  && export SLACK_HOOK_URL
+
+RUN npm ci
 # Environment variables done
 COPY . .
 EXPOSE 4000
