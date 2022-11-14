@@ -1,4 +1,10 @@
+# syntax=docker/dockerfile:1
 FROM node:current-alpine
+RUN apk add --update tini
+RUN mkdir -p /usr/jardinbinario/app
+WORKDIR /usr/jardinbinario/app
+COPY package.json package.json
+COPY package-lock.json package-lock.json
 # TODO check which are actually secrets or what can be passed in docker-compose
 # Setting environment variables coming from the GitHub actions secrets
 RUN --mount=type=secret,id=EXPIRATION_TIME \
@@ -19,13 +25,9 @@ RUN --mount=type=secret,id=EXPIRATION_TIME \
   && export MONGODB_URI \
   && export PRIVATE_KEY \
   && export SLACK_HOOK_URL
-# Environment variables done
-RUN apk add --update tini
-RUN mkdir -p /usr/jardinbinario/app
-WORKDIR /usr/jardinbinario/app
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+
 RUN npm ci
+# Environment variables done
 COPY . .
 EXPOSE 4000
 CMD ["npm", "run", "start:js"]
