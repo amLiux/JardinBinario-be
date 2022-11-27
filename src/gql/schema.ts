@@ -64,6 +64,7 @@ export const typeDefs = gql`
 		title: String
 		markdown: String
 		views: Int
+		sneakpeak: String
 	}
 
 	type Ticket {
@@ -87,6 +88,7 @@ export const typeDefs = gql`
 		title: String!
 		markdown: String!
 		tags: [String]
+		sneakpeak: String!
 	}
 
 	input TicketInput {

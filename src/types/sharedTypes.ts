@@ -26,11 +26,12 @@ export interface User {
 export interface BlogEntry {
 	id: ObjectId;
 	author: ObjectId;
-	tags?: string[];
 	createdAt: string;
 	title: string;
 	markdown: string;
 	views: number;
+	sneakpeak: string;
+	tags?: string[];
 }
 
 export interface Ticket {

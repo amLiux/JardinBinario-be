@@ -1,10 +1,9 @@
 import { Schema, model } from 'mongoose';
 import { BlogEntry, DeletedBlogEntry } from '../types/sharedTypes';
-import { NewsletterModel } from './Newsletter';
+// import { NewsletterModel } from './Newsletter';
 
 const getToday = () => new Date().getDate();
 
-// TODO add views and tags
 // 1. Create a Schema corresponding to the BlogEntry interface.
 const BlogEntrySchema = new Schema<BlogEntry>({
 	title: {
@@ -29,13 +28,17 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 	views: {
 		type: Number,
 		default: 0,
+	},
+	sneakpeak: {
+		type: String,
+		required: true,
 	}
 });
 
 // Middlewares
 BlogEntrySchema.post('save', async function (_) {
-	const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
-	// TODO let's send an email to our subscribed emails
+	// TODO let's send an email to our subscribed emails, we already have a ticket for this on next sprint JB-updateSMTP
+	// const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
 	console.log(_, this);
 });
 
