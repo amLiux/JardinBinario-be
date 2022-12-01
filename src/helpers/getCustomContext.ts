@@ -13,7 +13,8 @@ const queriesThatDontRequireAuthentication = [
 	'newticket',
 	'newnewsletterentry',
 	'getrecententries',
-	'getmostviewedentries'
+	'getmostviewedentries',
+	'getallentriesids',
 ];
 
 const getQueryName = (body: any): string => {
