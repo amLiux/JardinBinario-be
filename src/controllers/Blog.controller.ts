@@ -23,6 +23,14 @@ export const BlogResolvers = {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
+		getAllEntriesIds: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
+			try {
+				const allBlogs = await BlogEntryModel.find().select('_id');
+				return allBlogs;
+			} catch (err) {
+				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
+			}
+		},
 		getRecentEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
 			try {
 				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4).populate('author', 'lastName email name avatar');

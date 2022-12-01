@@ -20,7 +20,8 @@ WORKDIR /usr/jardinbinario/app
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN npm ci
+RUN npm ci --only=production && npm cache clean --force
+
 COPY . .
 EXPOSE 4000
 CMD ["npm", "run", "start:js"]

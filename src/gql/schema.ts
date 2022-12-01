@@ -137,6 +137,7 @@ export const typeDefs = gql`
 		getSpecificBlogEntry(blogId:String!): BlogEntry
 		getRecentEntries: [BlogEntry]
 		getDeletedEntries: [BlogEntry]
+		getAllEntriesIds: [BlogEntry]
 		getEntriesByAuthor(authorId:String!): [BlogEntry]
 		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
