@@ -35,7 +35,7 @@ export class JardinBinarioServer {
 
 	public async listen(): Promise<ServerStatus> {
 		try {
-			const { url } = await this.app.listen(process.env.PORT);
+			const { url } = await this.app.listen(process.env.PORT || 4000);
 			return {
 				message: `Listening on: ${url}`,
 				connected: true,
