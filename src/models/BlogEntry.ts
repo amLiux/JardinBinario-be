@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
+import { notifyEndUsersAboutNewBlog } from '../helpers/SMTP';
 import { BlogEntry, DeletedBlogEntry } from '../types/sharedTypes';
-// import { NewsletterModel } from './Newsletter';
+import { NewsletterModel } from './Newsletter';
 
 const getToday = () => new Date().getDate();
 
@@ -36,10 +37,9 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 });
 
 // Middlewares
-BlogEntrySchema.post('save', async function (_) {
-	// TODO let's send an email to our subscribed emails, we already have a ticket for this on next sprint JB-updateSMTP
-	// const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
-	console.log(_, this);
+BlogEntrySchema.post('save', async function (blog:BlogEntry) {
+	const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
+	await notifyEndUsersAboutNewBlog(subscribedEmails, blog);
 });
 
 BlogEntrySchema.post('findOneAndRemove', async function (doc: BlogEntry, next) {
