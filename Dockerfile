@@ -21,9 +21,10 @@ WORKDIR /usr/jardinbinario/app
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN npm ci && npm cache clean --force
-RUN npx tsc
+RUN npm ci --only-production && npm cache clean --force
 
 COPY . .
+RUN npx tsc
+
 EXPOSE 4000
 CMD ["node", "build/src/index.js"]
