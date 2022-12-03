@@ -27,4 +27,5 @@ COPY . .
 RUN npx tsc
 
 EXPOSE 4000
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "build/src/index.js"]

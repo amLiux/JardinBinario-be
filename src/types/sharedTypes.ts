@@ -31,7 +31,7 @@ export interface BlogEntry {
 	markdown: string;
 	views: number;
 	sneakpeak: string;
-	tags?: string[];
+	tags: string[];
 }
 
 export interface Ticket {
