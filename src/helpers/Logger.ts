@@ -33,7 +33,7 @@ export const Errors = {
 	},
 	WRONG_INPUT: {
 		code: 'WRONG_INPUT',
-		notify: true,
+		notify: false,
 	},
 	SMTP_ERROR: {
 		code: 'SMTP_ERROR',
@@ -45,6 +45,10 @@ export const Errors = {
 	},
 	SESSION_EXPIRED: {
 		code: 'SESSION_EXPIRED',
+		notify: false,
+	},
+	NOT_VALID_DOMAIN: {
+		code: 'NOT_VALID_DOMAIN',
 		notify: false,
 	}
 };
