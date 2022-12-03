@@ -22,8 +22,6 @@ COPY package-lock.json package-lock.json
 
 RUN npm ci && npm cache clean --force
 
-RUN npm run build
-
 COPY . .
 EXPOSE 4000
-CMD ["node", "build/src/index.js"]
+CMD ["npm", "run", "start:js"]
