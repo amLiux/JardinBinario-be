@@ -13,6 +13,7 @@ ARG PRIVATE_KEY
 ENV PRIVATE_KEY=${PRIVATE_KEY}
 ARG SLACK_HOOK_URL
 ENV SLACK_HOOK_URL=${SLACK_HOOK_URL}
+
 # done with ENV variables
 RUN apk add --update tini
 RUN mkdir -p /usr/jardinbinario/app
@@ -20,8 +21,7 @@ WORKDIR /usr/jardinbinario/app
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN npm ci --only-production && npm cache clean --force
-
+RUN npm ci && npm cache clean --force
 RUN npx tsc
 
 COPY . .
