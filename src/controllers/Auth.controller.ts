@@ -47,6 +47,11 @@ export const AuthResolvers = {
 		newUser: async (_: any, { userInput }: UserInput, ctx: CustomContext): Promise<User> => {
 			const { email } = userInput;
 
+
+			if (!(/@jardinbinario.com\s*$/.test(email))) {
+				throw await generateErrorObject(Errors.NOT_VALID_DOMAIN, `${email} does not have a valid domain.`, ctx);
+			}
+
 			const User = await findUserByEmail(email);
 
 			if (User) {
@@ -73,14 +78,8 @@ export const AuthResolvers = {
 			}
 
 			try {
-				const token = await generateJWT(
-					User as User,
-					String(process.env.PRIVATE_KEY),
-					String(process.env.EXPIRATION_TIME)
-				);
-				return {
-					token,
-				};
+				const token = generateJWT(User as User);
+				return { token };
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, String(err), ctx);
 			}
