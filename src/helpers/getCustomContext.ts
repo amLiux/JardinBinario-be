@@ -59,7 +59,7 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 	if (!token || tokenWithoutBearer === '') throw new Error('A verification token is required.');
 
 	try {
-		const User = await verifyJWT(tokenWithoutBearer);
+		const User = verifyJWT(tokenWithoutBearer);
 
 		if (!User) {
 			throw await generateErrorObject(Errors.UNKOWN_USER, 'Not a valid user', taggedContext);

@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
+import { notifyUsersAboutNewTicket } from '../helpers/SMTP';
 import { Ticket } from '../types/sharedTypes';
+import { UserModel } from './User';
 
 // 1. Create a Schema corresponding to the BlogEntry interface.
 const TicketSchema = new Schema<Ticket>({
@@ -33,9 +35,9 @@ const TicketSchema = new Schema<Ticket>({
 });
 
 // Middlewares
-TicketSchema.post('save', async function (_) {
-	// TODO do we send email + slack notification here?
-	console.log(_, this);
+TicketSchema.post('save', async function (ticket:Ticket) {
+	const availableUsers = await UserModel.find().select('email name');
+	await notifyUsersAboutNewTicket(availableUsers, ticket);
 });
 
 // 2. Create a Model.
