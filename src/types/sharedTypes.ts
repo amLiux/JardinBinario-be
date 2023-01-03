@@ -30,6 +30,7 @@ export interface BlogEntry {
 	title: string;
 	markdown: string;
 	views: number;
+	shares: number;
 	sneakpeak: string;
 	tags: string[];
 }

@@ -30,6 +30,10 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 		type: Number,
 		default: 0,
 	},
+	shares: {
+		type: Number,
+		default: 0,
+	},
 	sneakpeak: {
 		type: String,
 		required: true,
@@ -52,14 +56,14 @@ BlogEntrySchema.post('findOneAndRemove', async function (doc: BlogEntry, next) {
 	}
 });
 
-BlogEntrySchema.post('findOne', async function (doc: BlogEntry | any, next) {
-	try {
-		await BlogEntryModel.findOneAndUpdate({ _id: doc._id }, { views: doc.views += 1 });
-	} catch (err) {
-		next(err as any);
-	}
-	next();
-});
+// BlogEntrySchema.post('findOne', async function (doc: BlogEntry | any, next) {
+// 	try {
+// 		await BlogEntryModel.findOneAndUpdate({ _id: doc._id }, { views: doc.views += 1 });
+// 	} catch (err) {
+// 		next(err as any);
+// 	}
+// 	next();
+// });
 
 // 2. Create a Model.
 export const BlogEntryModel = model<BlogEntry>('blogEntries', BlogEntrySchema);
