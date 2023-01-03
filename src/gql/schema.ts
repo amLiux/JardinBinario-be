@@ -64,6 +64,7 @@ export const typeDefs = gql`
 		title: String
 		markdown: String
 		views: Int
+		shares: Int
 		sneakpeak: String
 	}
 
@@ -89,6 +90,12 @@ export const typeDefs = gql`
 		markdown: String!
 		tags: [String]
 		sneakpeak: String!
+		# TODO do we need this here?
+		shares: Int
+	}
+
+	input BlogSharesInput {
+		id: String!
 	}
 
 	input TicketInput {
@@ -120,6 +127,7 @@ export const typeDefs = gql`
 		# Blog
 		newBlogEntry(blogInput: BlogInput): BlogEntry
 		updateBlogEntry(blogInput: BlogInput): BlogEntry
+		updateBlogShares(blogSharesInput: BlogSharesInput): Boolean
 		deleteBlogEntry(blogId: String): String
 		recoverDeletedBlogEntry(blogId: String): BlogEntry
 		# Ticket
