@@ -94,8 +94,10 @@ export const typeDefs = gql`
 		shares: Int
 	}
 
-	input BlogSharesInput {
+	input BlogMetricsInput {
 		id: String!
+		shares: Boolean
+		views: Boolean
 	}
 
 	input TicketInput {
@@ -127,7 +129,7 @@ export const typeDefs = gql`
 		# Blog
 		newBlogEntry(blogInput: BlogInput): BlogEntry
 		updateBlogEntry(blogInput: BlogInput): BlogEntry
-		updateBlogShares(blogSharesInput: BlogSharesInput): Boolean
+		updateBlogMetrics(blogMetricsInput: BlogMetricsInput): Boolean
 		deleteBlogEntry(blogId: String): String
 		recoverDeletedBlogEntry(blogId: String): BlogEntry
 		# Ticket
