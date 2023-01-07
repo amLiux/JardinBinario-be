@@ -15,7 +15,7 @@ const queriesThatDontRequireAuthentication = [
 	'getrecententries',
 	'getmostviewedentries',
 	'getallentriesids',
-	'updateblogshares'
+	'updateblogmetrics'
 ];
 
 const getQueryName = (body: any): string => {
