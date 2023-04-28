@@ -65,3 +65,12 @@ export interface TaggedContext extends Context {
 	requestId: string;
 	query: string;
 }
+
+export interface UserDetails {
+	browser: string;
+	timezone: string;
+	language: string;
+	visitedAt: Date;
+	country: string;
+	os: string;
+}

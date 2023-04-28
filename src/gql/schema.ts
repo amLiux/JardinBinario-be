@@ -83,6 +83,20 @@ export const typeDefs = gql`
 		status: String
 	}
 
+
+	# TODO check about loose typing or dynamic keys to reuse this following schemas
+	type BrowserCount {
+		browser: String!
+		count: Int!
+	}
+
+	type BrowserMetrics {
+		metricName: String!
+		count: [BrowserCount]
+		dueDate: String!
+	}
+
+
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
 
 	input BlogInput {
@@ -119,6 +133,13 @@ export const typeDefs = gql`
 		newPassword: String!
 	}
 
+	input MetricsInput {
+		timezone: String!
+		language: String!
+		country: String!
+		userAgent: String!
+	}
+
 	type Mutation {
 		# Authentication
 		newUser(userInput: UserInput): User
@@ -140,6 +161,8 @@ export const typeDefs = gql`
 		newNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
 		updateNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
 
+		# Metrics
+		newUserDetailsEntry(metricsInput: MetricsInput): Boolean
 	}
 
 	type Query {
@@ -152,5 +175,6 @@ export const typeDefs = gql`
 		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
+		getMostUsedBrowsers:BrowserMetrics
 	}
 `;
