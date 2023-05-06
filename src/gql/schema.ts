@@ -1,6 +1,9 @@
 import { gql } from 'apollo-server';
 
-export const typeDefs = gql` 
+export const typeDefs = gql`
+	scalar JSON
+	scalar JSONObject
+
 	type User {
 		id: ID
 		name: String
@@ -83,6 +86,13 @@ export const typeDefs = gql`
 		status: String
 	}
 
+	type Metrics {
+		metricName: String!
+		count: JSON
+		dueDate: String!
+	}
+
+
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
 
 	input BlogInput {
@@ -119,6 +129,13 @@ export const typeDefs = gql`
 		newPassword: String!
 	}
 
+	input MetricsInput {
+		timezone: String!
+		language: String!
+		country: String!
+		userAgent: String!
+	}
+
 	type Mutation {
 		# Authentication
 		newUser(userInput: UserInput): User
@@ -140,6 +157,8 @@ export const typeDefs = gql`
 		newNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
 		updateNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
 
+		# Metrics
+		newUserDetailsEntry(metricsInput: MetricsInput): Boolean
 	}
 
 	type Query {
@@ -152,5 +171,6 @@ export const typeDefs = gql`
 		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
+		getMetric(metricName:String!):Metrics
 	}
 `;

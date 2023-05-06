@@ -70,11 +70,6 @@ const generateSlackCard = (error: InternalError, message: string, requestId: str
 				type: "mrkdwn",
 				text: `_Request Id:_ <https://example.com|${requestId}> :heavy_exclamation_mark: \n\n *Error Code:*\n${error.code}`,
 			},
-			accessory: {
-				type: "image",
-				image_url: "https://is5-ssl.mzstatic.com/image/thumb/Purple3/v4/d3/72/5c/d3725c8f-c642-5d69-1904-aa36e4297885/source/256x256bb.jpg",
-				alt_text: "Haunted hotel image"
-			}
 		}
 	]
 });
