@@ -1,10 +1,11 @@
+import { UAParser } from 'ua-parser-js';
+
 import { Errors, generateErrorObject } from '../helpers/Logger';
 import { goBackOneMonth } from '../helpers/date';
 import { UserDetailsModel } from '../models/Metrics';
-import { UAParser } from 'ua-parser-js';
 import { CustomContext } from '../types/sharedTypes';
 
-interface MetricsInput {
+interface UserDetailsInput {
 	metricsInput: {
 		timezone: string;
 		language: string;
@@ -13,42 +14,51 @@ interface MetricsInput {
 	}
 }
 
-type BrowserCount = {
-	browser: string;
+type MetricName = 'browser' | 'country';
+
+type CountBase = {
+	[key in MetricName]: string;
+};
+
+interface Count extends CountBase {
 	count: number;
 }
 
 interface Metrics {
-	metricName: 'browser';
-	count: BrowserCount;
+	metricName: MetricName;
+	count: Count[];
 	dueDate: string;
+}
+
+const simpleAggregate = async (groupBy:MetricName) => {
+	const oneMonthAgo = goBackOneMonth();
+	return await UserDetailsModel.aggregate([
+		{ $match: { visitedAt: { $gte: oneMonthAgo, $lt: new Date() } } },
+		{
+			$group: {
+				_id: `$${groupBy}`,
+				count: { $sum: 1 }
+			},
+		},
+		{
+			$project: {
+				_id: 0,
+				[groupBy]: "$_id",
+				count: 1,
+				sum: 1
+
+			},
+		}
+	]);
 }
 
 export const MetricsResolvers = {
 	Query: {
-		getMostUsedBrowsers: async (_: any, __: any, ctx: CustomContext): Promise<Metrics> => {
+		getMetric: async (_: any, {metricName}: Record<string, MetricName>, ctx: CustomContext): Promise<Metrics> => {
 			try {
-				const oneMonthAgo = goBackOneMonth();
-				const aggregateResult = <unknown> await UserDetailsModel.aggregate([
-					{ $match: { visitedAt: { $gte: oneMonthAgo, $lt: new Date() } } },
-					{
-						$group: {
-							_id: "$browser",
-							count: { $sum: 1 }
-						},
-					},
-					{
-						$project: {
-							_id: 0,
-							browser: "$_id",
-							count: 1,
-							sum: 1
-
-						},
-					}
-				]) as BrowserCount;
+				const aggregateResult = <unknown> simpleAggregate(metricName) as Count[];
 				return {
-					metricName: 'browser',
+					metricName: metricName,
 					count: aggregateResult,
 					dueDate: new Date().toUTCString(),
 				};
@@ -56,12 +66,9 @@ export const MetricsResolvers = {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		// TODO get countries that visit the most
-		// TODO get the most languages visitors speak
-		// TODO get the timezone that users are in the most 
 	},
 	Mutation: {
-		newUserDetailsEntry: async (_: any, { metricsInput: {userAgent, ...props} }: MetricsInput, ctx: CustomContext): Promise<boolean> => {
+		newUserDetailsEntry: async (_: any, { metricsInput: {userAgent, ...props} }: UserDetailsInput, ctx: CustomContext): Promise<boolean> => {
 			try {
 				// TODO don't be sketchy, save browser versions later
 				const {os: {name: os}, browser: {name: browser}} = new UAParser(userAgent).getResult();

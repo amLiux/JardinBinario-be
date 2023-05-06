@@ -1,6 +1,9 @@
 import { gql } from 'apollo-server';
 
-export const typeDefs = gql` 
+export const typeDefs = gql`
+	scalar JSON
+	scalar JSONObject
+
 	type User {
 		id: ID
 		name: String
@@ -83,16 +86,9 @@ export const typeDefs = gql`
 		status: String
 	}
 
-
-	# TODO check about loose typing or dynamic keys to reuse this following schemas
-	type BrowserCount {
-		browser: String!
-		count: Int!
-	}
-
-	type BrowserMetrics {
+	type Metrics {
 		metricName: String!
-		count: [BrowserCount]
+		count: JSON
 		dueDate: String!
 	}
 
@@ -175,6 +171,6 @@ export const typeDefs = gql`
 		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
-		getMostUsedBrowsers:BrowserMetrics
+		getMetric(metricName:String!):Metrics
 	}
 `;
