@@ -1,6 +1,9 @@
 import { gql } from 'apollo-server';
 
-export const typeDefs = gql` 
+export const typeDefs = gql`
+	scalar JSON
+	scalar JSONObject
+
 	type User {
 		id: ID
 		name: String
@@ -64,6 +67,7 @@ export const typeDefs = gql`
 		title: String
 		markdown: String
 		views: Int
+		shares: Int
 		sneakpeak: String
 	}
 
@@ -82,6 +86,13 @@ export const typeDefs = gql`
 		status: String
 	}
 
+	type Metrics {
+		metricName: String!
+		count: JSON
+		dueDate: String!
+	}
+
+
 	# TODO need to test performance, we are requiring everything for sharing schema between newBlog and updateBlog Mutations
 
 	input BlogInput {
@@ -89,6 +100,14 @@ export const typeDefs = gql`
 		markdown: String!
 		tags: [String]
 		sneakpeak: String!
+		# TODO do we need this here?
+		shares: Int
+	}
+
+	input BlogMetricsInput {
+		id: String!
+		shares: Boolean
+		views: Boolean
 	}
 
 	input TicketInput {
@@ -110,6 +129,13 @@ export const typeDefs = gql`
 		newPassword: String!
 	}
 
+	input MetricsInput {
+		timezone: String!
+		language: String!
+		country: String!
+		userAgent: String!
+	}
+
 	type Mutation {
 		# Authentication
 		newUser(userInput: UserInput): User
@@ -120,6 +146,7 @@ export const typeDefs = gql`
 		# Blog
 		newBlogEntry(blogInput: BlogInput): BlogEntry
 		updateBlogEntry(blogInput: BlogInput): BlogEntry
+		updateBlogMetrics(blogMetricsInput: BlogMetricsInput): Boolean
 		deleteBlogEntry(blogId: String): String
 		recoverDeletedBlogEntry(blogId: String): BlogEntry
 		# Ticket
@@ -130,6 +157,8 @@ export const typeDefs = gql`
 		newNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
 		updateNewsletterEntry(newsletterInput: NewsletterInput): NewsletterEntry
 
+		# Metrics
+		newUserDetailsEntry(metricsInput: MetricsInput): Boolean
 	}
 
 	type Query {
@@ -142,5 +171,6 @@ export const typeDefs = gql`
 		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
+		getMetric(metricName:String!):Metrics
 	}
 `;

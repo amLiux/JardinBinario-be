@@ -30,6 +30,7 @@ export interface BlogEntry {
 	title: string;
 	markdown: string;
 	views: number;
+	shares: number;
 	sneakpeak: string;
 	tags: string[];
 }
@@ -63,4 +64,13 @@ export interface CustomContext extends TaggedContext{
 export interface TaggedContext extends Context {
 	requestId: string;
 	query: string;
+}
+
+export interface UserDetails {
+	browser: string;
+	timezone: string;
+	language: string;
+	visitedAt: Date;
+	country: string;
+	os: string;
 }
