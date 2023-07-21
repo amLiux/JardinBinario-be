@@ -64,6 +64,7 @@ export interface CustomContext extends TaggedContext{
 export interface TaggedContext extends Context {
 	requestId: string;
 	query: string;
+	gridFs: any;
 }
 
 export interface UserDetails {
@@ -73,4 +74,12 @@ export interface UserDetails {
 	visitedAt: Date;
 	country: string;
 	os: string;
+}
+
+export interface ImageEntry {
+	id: ObjectId;
+	prompt: string;
+	date: Date;
+	fileId: ObjectId;
+	contentType: string;
 }
