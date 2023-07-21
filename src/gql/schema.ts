@@ -136,6 +136,17 @@ export const typeDefs = gql`
 		userAgent: String!
 	}
 
+	type ImageData {
+		prompt: String!
+		img: Image!
+		date: String!
+	}
+
+	type Image {
+		buffer: String!
+		contentType: String!
+	}
+
 	type Mutation {
 		# Authentication
 		newUser(userInput: UserInput): User
@@ -172,5 +183,8 @@ export const typeDefs = gql`
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
 		getMetric(metricName:String!):Metrics
+		getImageByPrompt(prompt:String!):ImageData!
+		getImageById(imageId:String!):ImageData!
+		getAllImagesOfDay:[ImageData]!
 	}
 `;
