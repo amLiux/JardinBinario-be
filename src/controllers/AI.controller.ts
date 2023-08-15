@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { ObjectId } from 'mongodb';
 import AI from '../ai/AI';
 import { Errors, generateErrorObject } from '../helpers/Logger';
 import { ImageEntryModel } from '../models/ImageEntry';
 import { CustomContext, ImageEntry } from '../types/sharedTypes';
-
+const Filter = require('bad-words-es');
+import { badWords } from '../models/profaneExtention';
 interface ImageData {
 	prompt: string;
 	date: string;
@@ -30,8 +32,11 @@ export const AIResolvers = {
 		getImageByPrompt: async (_: any, { prompt }: Record<string, string>, ctx: CustomContext): Promise<ImageData> => {
 			const { gridFs } = ctx;
 			try {
+				const promptfFilter = new Filter();
+				promptfFilter.addWords(...badWords);
+				if (promptfFilter.isProfane(prompt)) throw new Error('Please remove profanity from your prompt and try again');
 				const {startOfDay, endOfDay} = getDateInfo();
-
+				
 				const count = await ImageEntryModel.aggregate([
 					{
 						$match: {
