@@ -82,10 +82,10 @@ export const AIResolvers = {
 
 				return {
 					prompt,
-					date: new Date().toISOString(), // Asegúrate de obtener la fecha actual correctamente.
+					date: new Date().toISOString(),
 					img: {
 						buffer: base64Image,
-						contentType: 'image/png', // Asegúrate de especificar el contentType correcto aquí.
+						contentType: 'image/png',
 					},
 				};
 
