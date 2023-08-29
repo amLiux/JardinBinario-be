@@ -8,7 +8,7 @@ const ImageEntrySchema = new Schema<ImageEntry>({
 	},
 	date: {
 		type: Date,
-		default: new Date()
+		default: Date.now,
 	},
 	fileId: {
 		type: Schema.Types.ObjectId,
