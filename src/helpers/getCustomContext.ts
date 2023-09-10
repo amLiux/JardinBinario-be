@@ -17,7 +17,10 @@ const queriesThatDontRequireAuthentication = [
 	'getallentriesids',
 	'updateblogmetrics',
 	'newuserdetailsentry',
-	'getmetric'
+	'getmetric',
+	'getimagebyprompt',
+	'getimagebyid',
+	'getallimagesofday'
 ];
 
 const getQueryName = (body: any): string => {
@@ -51,11 +54,11 @@ const getQueryName = (body: any): string => {
 	}
 };
 
-export const getCustomContext = async (req: Request): Promise<CustomContext | TaggedContext> => {
+export const getCustomContext = async (req: Request, gridFs:any): Promise<CustomContext | TaggedContext> => {
 	const token = req.headers?.['authorization'] || '';
 	const tokenWithoutBearer = token.replace('Bearer', '').trim();
 	const query = req.body?.operationName || getQueryName(req.body);
-	const taggedContext = initContextTagging(query);
+	const taggedContext = initContextTagging(query, gridFs);
 
 	if (queriesThatDontRequireAuthentication.includes(query.toLowerCase())) return taggedContext;
 
@@ -85,11 +88,12 @@ export const getCustomContext = async (req: Request): Promise<CustomContext | Ta
 
 };
 
-const initContextTagging = (query: string): TaggedContext => {
+const initContextTagging = (query: string, gridFs: any): TaggedContext => {
 	const requestId = v4();
 
 	return {
 		requestId,
-		query
+		query,
+		gridFs,
 	};
 }

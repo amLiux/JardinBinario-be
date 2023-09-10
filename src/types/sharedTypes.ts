@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 import { Context } from 'apollo-server-core';
 
 export interface ServerStatus {
@@ -23,10 +23,10 @@ export interface User {
 	checkPassword: (password:User['password'] | User['tempPassword'], isTempPassword?:boolean) => boolean;
 	save: () => Promise<User>
 }
-export interface BlogEntry {
+export interface BlogEntry extends Document {
 	id: ObjectId;
 	author: ObjectId;
-	createdAt: string;
+	createdAt: Date;
 	title: string;
 	markdown: string;
 	views: number;
@@ -64,6 +64,7 @@ export interface CustomContext extends TaggedContext{
 export interface TaggedContext extends Context {
 	requestId: string;
 	query: string;
+	gridFs: any;
 }
 
 export interface UserDetails {
@@ -73,4 +74,12 @@ export interface UserDetails {
 	visitedAt: Date;
 	country: string;
 	os: string;
+}
+
+export interface ImageEntry {
+	id: ObjectId;
+	prompt: string;
+	date: Date;
+	fileId: ObjectId;
+	contentType: string;
 }

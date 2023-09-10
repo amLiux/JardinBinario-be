@@ -19,8 +19,8 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 	},
 	tags: [String],
 	createdAt: {
-		type: String,
-		default: new Date().toUTCString(),
+		type: Date,
+		default: Date.now,
 	},
 	markdown: {
 		type: String,
@@ -40,12 +40,14 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 	}
 });
 
+
 // Middlewares
 BlogEntrySchema.post('save', async function (blog:BlogEntry) {
-	const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
-	await notifyEndUsersAboutNewBlog(subscribedEmails, blog);
+	if(this.isNew) {
+		const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
+		await notifyEndUsersAboutNewBlog(subscribedEmails, blog);
+	}
 });
-
 BlogEntrySchema.post('findOneAndRemove', async function (doc: BlogEntry, next) {
 	try {
 		const { markdown, tags, title, author, createdAt } = doc;

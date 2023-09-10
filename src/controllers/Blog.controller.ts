@@ -147,7 +147,7 @@ export const BlogResolvers = {
 					throw await generateErrorObject(Errors.NOT_FOUND, 'There was no BlogEntry to delete', ctx);
 				}
 
-				return deletedBlogEntry.id;
+				return String(deletedBlogEntry.id);
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
