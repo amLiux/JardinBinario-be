@@ -43,7 +43,7 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 
 // Middlewares
 BlogEntrySchema.post('save', async function (blog:BlogEntry) {
-	if(this.isNew) {
+	if(this.isNew && process.env.RAILWAY_ENVIRONMENT_NAME === 'production') {
 		const subscribedEmails = await NewsletterModel.find({ status: 'subscribed' });
 		await notifyEndUsersAboutNewBlog(subscribedEmails, blog);
 	}
