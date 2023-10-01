@@ -60,7 +60,7 @@ export const typeDefs = gql`
 	}
 
 	type BlogEntry {
-		id: ID
+		_id: ID
 		author: Author
 		tags: [String]
 		createdAt: String
@@ -69,6 +69,7 @@ export const typeDefs = gql`
 		views: Int
 		shares: Int
 		sneakpeak: String
+		deleted: Boolean
 	}
 
 	type Ticket {
@@ -102,6 +103,7 @@ export const typeDefs = gql`
 		sneakpeak: String!
 		# TODO do we need this here?
 		shares: Int
+		_id: String
 	}
 
 	input BlogMetricsInput {
@@ -159,7 +161,7 @@ export const typeDefs = gql`
 		updateBlogEntry(blogInput: BlogInput): BlogEntry
 		updateBlogMetrics(blogMetricsInput: BlogMetricsInput): Boolean
 		deleteBlogEntry(blogId: String): String
-		recoverDeletedBlogEntry(blogId: String): BlogEntry
+		recoverDeletedBlogEntry(blogId: String): String
 		# Ticket
 		newTicket(ticketInput: TicketInput): Ticket
 		updateTicket(ticketInput: TicketInput): Ticket
@@ -178,6 +180,7 @@ export const typeDefs = gql`
 		getRecentEntries: [BlogEntry]
 		getDeletedEntries: [BlogEntry]
 		getAllEntriesIds: [BlogEntry]
+		getAllEntries: [BlogEntry]
 		getEntriesByAuthor(authorId:String!): [BlogEntry]
 		getMostViewedEntries:[BlogEntry]
 		getOpenTickets: [Ticket]
