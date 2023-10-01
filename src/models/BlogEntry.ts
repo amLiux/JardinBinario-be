@@ -1,9 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { notifyEndUsersAboutNewBlog } from '../helpers/SMTP';
-import { BlogEntry, DeletedBlogEntry } from '../types/sharedTypes';
+import { BlogEntry } from '../types/sharedTypes';
 import { NewsletterModel } from './Newsletter';
-
-const getToday = () => new Date().getDate();
 
 // 1. Create a Schema corresponding to the BlogEntry interface.
 const BlogEntrySchema = new Schema<BlogEntry>({
@@ -37,6 +35,11 @@ const BlogEntrySchema = new Schema<BlogEntry>({
 	sneakpeak: {
 		type: String,
 		required: true,
+	},
+	deleted: {
+		type: Boolean,
+		required: false,
+		default: false,
 	}
 });
 
@@ -48,34 +51,6 @@ BlogEntrySchema.post('save', async function (blog:BlogEntry) {
 		await notifyEndUsersAboutNewBlog(subscribedEmails, blog);
 	}
 });
-BlogEntrySchema.post('findOneAndRemove', async function (doc: BlogEntry, next) {
-	try {
-		const { markdown, tags, title, author, createdAt } = doc;
-		const deletedBlogEntry = new RecentlyDeletedBlogEntryModel({ markdown, tags, title, author, createdAt });
-		await deletedBlogEntry.save();
-	} catch (err) {
-		next(err as any);
-	}
-});
-
-// BlogEntrySchema.post('findOne', async function (doc: BlogEntry | any, next) {
-// 	try {
-// 		await BlogEntryModel.findOneAndUpdate({ _id: doc._id }, { views: doc.views += 1 });
-// 	} catch (err) {
-// 		next(err as any);
-// 	}
-// 	next();
-// });
 
 // 2. Create a Model.
 export const BlogEntryModel = model<BlogEntry>('blogEntries', BlogEntrySchema);
-
-const RecentlyDeletedBlogEntrySchema = new Schema<DeletedBlogEntry>({
-	...BlogEntrySchema.obj,
-	deleteIn: {
-		type: String,
-		default: new Date(new Date().setDate(getToday() + 30)).toUTCString(),
-	},
-});
-
-export const RecentlyDeletedBlogEntryModel = model<DeletedBlogEntry>('deletedblogEntries', RecentlyDeletedBlogEntrySchema);
