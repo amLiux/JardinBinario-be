@@ -26,7 +26,7 @@ export const BlogResolvers = {
 		// TODO implement get by tags and maybe get by theme too
 		getMostViewedEntries: async (_: any, __: any, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ views: -1 }).limit(4).populate('author', 'lastName email name avatar');
+				const latestBlogs = await BlogEntryModel.find({ deleted: false }).sort({ views: -1 }).limit(4).populate('author', 'lastName email name avatar');
 				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
@@ -69,7 +69,7 @@ export const BlogResolvers = {
 		},
 		getRecentEntries: async (_: any, __: any, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4).populate('author', 'lastName email name avatar');
+				const latestBlogs = await BlogEntryModel.find({ deleted: false }).sort({ _id: -1 }).limit(4).populate('author', 'lastName email name avatar');
 				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
@@ -162,7 +162,7 @@ export const BlogResolvers = {
 			try {
 				const deletedBlogEntry = await BlogEntryModel.findOneAndUpdate({ _id: blogId }, {
 					deleted: true,
-				} , {
+				}, {
 					new: true,
 				});
 				if (!deletedBlogEntry) {
@@ -178,7 +178,7 @@ export const BlogResolvers = {
 			try {
 				const recoveredBlogEntry = await BlogEntryModel.findOneAndUpdate({ _id: blogId }, {
 					deleted: false,
-				} , {
+				}, {
 					new: true,
 				});
 				if (!recoveredBlogEntry) {
