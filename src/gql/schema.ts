@@ -107,7 +107,7 @@ export const typeDefs = gql`
 	}
 
 	input BlogMetricsInput {
-		id: String!
+		_id: String!
 		shares: Boolean
 		views: Boolean
 	}
