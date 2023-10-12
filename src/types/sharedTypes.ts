@@ -24,7 +24,7 @@ export interface User {
 	save: () => Promise<User>
 }
 export interface BlogEntry extends Document {
-	id: ObjectId;
+	_id: ObjectId;
 	author: ObjectId;
 	createdAt: Date;
 	title: string;
@@ -33,6 +33,7 @@ export interface BlogEntry extends Document {
 	shares: number;
 	sneakpeak: string;
 	tags: string[];
+	deleted: boolean;
 }
 
 export interface Ticket {

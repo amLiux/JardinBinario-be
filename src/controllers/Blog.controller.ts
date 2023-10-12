@@ -1,12 +1,12 @@
 import { findUserById } from '../helpers/findUserById';
 import { Errors, generateErrorObject } from '../helpers/Logger';
-import { BlogEntryModel, RecentlyDeletedBlogEntryModel } from '../models/BlogEntry'
+import { BlogEntryModel } from '../models/BlogEntry'
 import { BlogEntry, CustomContext } from '../types/sharedTypes';
 import { HydratedDocument, CallbackError } from 'mongoose';
 
 interface BlogInput {
 	blogInput: {
-		id?: string;
+		_id?: string;
 		tags: BlogEntry['tags'];
 		title: BlogEntry['author'];
 		markdown: BlogEntry['markdown'];
@@ -24,15 +24,15 @@ interface BlogMetricsInput {
 export const BlogResolvers = {
 	Query: {
 		// TODO implement get by tags and maybe get by theme too
-		getMostViewedEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
+		getMostViewedEntries: async (_: any, __: any, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ views : -1 }).limit(4).populate('author', 'lastName email name avatar');
+				const latestBlogs = await BlogEntryModel.find({ deleted: false }).sort({ views: -1 }).limit(4).populate('author', 'lastName email name avatar');
 				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getAllEntriesIds: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
+		getAllEntriesIds: async (_: any, __: any, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
 				const allBlogs = await BlogEntryModel.find().select('_id');
 				return allBlogs;
@@ -40,18 +40,37 @@ export const BlogResolvers = {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getRecentEntries: async (_:any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
+		getAllEntries: async (_: any, __: any, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestBlogs = await BlogEntryModel.find().sort({ _id: -1 }).limit(4).populate('author', 'lastName email name avatar');
-				return latestBlogs;
+				const allBlogs = await BlogEntryModel.aggregate([
+					{
+						$project: {
+							_id: 1,
+							title: 1,
+							id: 1,
+							markdown: 1,
+							createdAt: 1,
+							author: 1,
+							views: 1,
+							shares: 1,
+							tags: 1,
+							deleted: 1,
+							sneakpeak: {
+								$substrCP: ['$sneakpeak', 0, 80], // Recorta 'sneakpeak' a 80 caracteres
+							},
+						},
+					},
+				]);
+				await BlogEntryModel.populate(allBlogs, { path: "author" });
+				return allBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getDeletedEntries: async (_: any, __:any, ctx:CustomContext): Promise<BlogEntry[]> => {
+		getRecentEntries: async (_: any, __: any, ctx: CustomContext): Promise<BlogEntry[]> => {
 			try {
-				const latestDeletedBlogs = await RecentlyDeletedBlogEntryModel.find().sort({ _id: -1 }).limit(15);
-				return latestDeletedBlogs;
+				const latestBlogs = await BlogEntryModel.find({ deleted: false }).sort({ _id: -1 }).limit(4).populate('author', 'lastName email name avatar');
+				return latestBlogs;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
@@ -69,9 +88,9 @@ export const BlogResolvers = {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<BlogEntry> => {
+		getSpecificBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx: CustomContext): Promise<BlogEntry> => {
 			try {
-				const BlogEntry = await BlogEntryModel.findOne({_id: blogId}).populate('author', 'lastName email name avatar');
+				const BlogEntry = await BlogEntryModel.findOne({ _id: blogId }).populate('author', 'lastName email name avatar');
 
 				if (!BlogEntry) {
 					throw await generateErrorObject(Errors.NOT_FOUND, `There was no valid BlogEntry with id ${blogId}!`, ctx);
@@ -87,7 +106,7 @@ export const BlogResolvers = {
 		newBlogEntry: async (_: any, { blogInput }: BlogInput, ctx: CustomContext): Promise<BlogEntry> => {
 			const { markdown } = blogInput;
 			const { User } = ctx;
-			
+
 			if (markdown.trim().length <= 0) {
 				throw await generateErrorObject(Errors.WRONG_INPUT, 'You should add at least one paragraph to your Blog Entry', ctx);
 			}
@@ -99,31 +118,31 @@ export const BlogResolvers = {
 			}
 
 			try {
-				const newBlogEntry = await new BlogEntryModel({...blogInput, author: User?.id}).save();
+				const newBlogEntry = await new BlogEntryModel({ ...blogInput, author: User?.id }).save();
 				return newBlogEntry;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		updateBlogEntry: async (_: any, { blogInput }: BlogInput, ctx:CustomContext): Promise<BlogEntry> => {
+		updateBlogEntry: async (_: any, { blogInput }: BlogInput, ctx: CustomContext): Promise<BlogEntry> => {
 			try {
-				const { id } = blogInput;
+				const { _id } = blogInput;
 
 				// TODO shall we do search and then !BlogEntry to avoid casting? not sure
-				const BlogEntryToUpdate = await BlogEntryModel.findOneAndUpdate({ _id: id }, blogInput, {
+				const updatedBlogEntry = await BlogEntryModel.findOneAndUpdate({ _id }, blogInput, {
 					new: true,
 				});
 
-				return <BlogEntry>BlogEntryToUpdate;
+				return <BlogEntry>updatedBlogEntry;
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
 		// we do this (a different type of update) because I don't want to expose the updateBlogEntry as a query that doesn't require authentication to avoid a future exploit, not sure if it's the best way, but hey, it get's the job done (double the processing power, check BlogEntry.findOne middleware) but feels safer, and we are not going to get that much workload
-		updateBlogMetrics: async (_: any, { blogMetricsInput }: BlogMetricsInput, ctx:CustomContext): Promise<boolean> => {
+		updateBlogMetrics: async (_: any, { blogMetricsInput }: BlogMetricsInput, ctx: CustomContext): Promise<boolean> => {
 			try {
 				const { id, shares, views } = blogMetricsInput;
-				BlogEntryModel.findOne({ _id: id }, async (err:CallbackError, blogEntry:HydratedDocument<BlogEntry>) => {
+				BlogEntryModel.findOne({ _id: id }, async (err: CallbackError, blogEntry: HydratedDocument<BlogEntry>) => {
 					if (err) {
 						await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err.message, ctx);
 						return false;
@@ -139,10 +158,13 @@ export const BlogResolvers = {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		deleteBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx:CustomContext): Promise<string> => {
+		deleteBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx: CustomContext): Promise<string> => {
 			try {
-				const deletedBlogEntry = await BlogEntryModel.findOneAndRemove({ _id: blogId });
-
+				const deletedBlogEntry = await BlogEntryModel.findOneAndUpdate({ _id: blogId }, {
+					deleted: true,
+				}, {
+					new: true,
+				});
 				if (!deletedBlogEntry) {
 					throw await generateErrorObject(Errors.NOT_FOUND, 'There was no BlogEntry to delete', ctx);
 				}
@@ -152,18 +174,18 @@ export const BlogResolvers = {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
 		},
-		recoverDeletedBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx: CustomContext): Promise<BlogEntry> => {
+		recoverDeletedBlogEntry: async (_: any, { blogId }: Record<string, string>, ctx: CustomContext): Promise<string> => {
 			try {
-				const deletedBlogEntry = await RecentlyDeletedBlogEntryModel.findById(blogId);
-
-				if (!deletedBlogEntry) {
+				const recoveredBlogEntry = await BlogEntryModel.findOneAndUpdate({ _id: blogId }, {
+					deleted: false,
+				}, {
+					new: true,
+				});
+				if (!recoveredBlogEntry) {
 					throw await generateErrorObject(Errors.NOT_FOUND, 'There was no BlogEntry to recover', ctx);
 				}
 
-				const { markdown, title, author, tags, createdAt } = deletedBlogEntry;
-				const recoveredBlogEntry = await new BlogEntryModel({ markdown, title, author, tags, createdAt }).save();
-
-				return recoveredBlogEntry;
+				return String(recoveredBlogEntry.id);
 			} catch (err) {
 				throw await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err as any, ctx);
 			}
