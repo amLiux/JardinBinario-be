@@ -15,7 +15,7 @@ interface BlogInput {
 
 interface BlogMetricsInput {
 	blogMetricsInput: {
-		id: string;
+		_id: string;
 		shares?: boolean;
 		views?: boolean;
 	}
@@ -141,8 +141,8 @@ export const BlogResolvers = {
 		// we do this (a different type of update) because I don't want to expose the updateBlogEntry as a query that doesn't require authentication to avoid a future exploit, not sure if it's the best way, but hey, it get's the job done (double the processing power, check BlogEntry.findOne middleware) but feels safer, and we are not going to get that much workload
 		updateBlogMetrics: async (_: any, { blogMetricsInput }: BlogMetricsInput, ctx: CustomContext): Promise<boolean> => {
 			try {
-				const { id, shares, views } = blogMetricsInput;
-				BlogEntryModel.findOne({ _id: id }, async (err: CallbackError, blogEntry: HydratedDocument<BlogEntry>) => {
+				const { _id, shares, views } = blogMetricsInput;
+				BlogEntryModel.findOne({ _id }, async (err: CallbackError, blogEntry: HydratedDocument<BlogEntry>) => {
 					if (err) {
 						await generateErrorObject(Errors.INTERNAL_SERVER_ERROR, err.message, ctx);
 						return false;
