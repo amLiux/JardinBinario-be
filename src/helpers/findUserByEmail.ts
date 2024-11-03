@@ -1,10 +1,10 @@
-import { UserModel } from '../models/User';
-import { User } from '../types/sharedTypes';
+import { UserModel } from "../models/User";
+import { User } from "../types/sharedTypes";
 
-export const findUserByEmail = async (email: string): Promise<User | undefined> => {
-	const User = await UserModel.findOne({ email });
+export const findUserByEmail = async (
+  email: string
+): Promise<User | undefined> => {
+  const User = await UserModel.findOne({ email, active: true });
 
-	if (!User) return undefined;
-
-	return User;
-}
+  return User ?? undefined;
+};

@@ -28,6 +28,10 @@ const UserSchema = new Schema<User>({
 		type: String,
 		required: true
 	},
+	active: {
+		type: Boolean,
+		default: true,
+	},
 	createdAt: {
 		type: String,
 		default: new Date().toUTCString(),
