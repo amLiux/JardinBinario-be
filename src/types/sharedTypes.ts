@@ -18,6 +18,7 @@ export interface User {
 	role: string;
 	password?: string;
 	createdAt: string;
+	active: boolean;
 	tempPassword?: string;
 	tempPasswordTime?: string;
 	checkPassword: (password:User['password'] | User['tempPassword'], isTempPassword?:boolean) => boolean;

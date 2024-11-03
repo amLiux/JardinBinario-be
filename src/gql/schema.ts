@@ -10,6 +10,9 @@ export const typeDefs = gql`
 		email: String
 		lastName: String
 		avatar: String
+		createdAt: String
+		role: String
+		active: Boolean
 	}
 
 	input UserInput {
@@ -154,6 +157,7 @@ export const typeDefs = gql`
 		newUser(userInput: UserInput): User
 		authenticate(authInput: AuthInput): Token
 		initForgotPassword(email: String): String
+		toggleUserActive(email: String): User
 		finishForgotPassword(forgotPasswordInput: ForgotPasswordInput): User
 
 		# Blog
@@ -162,6 +166,7 @@ export const typeDefs = gql`
 		updateBlogMetrics(blogMetricsInput: BlogMetricsInput): Boolean
 		deleteBlogEntry(blogId: String): String
 		recoverDeletedBlogEntry(blogId: String): String
+
 		# Ticket
 		newTicket(ticketInput: TicketInput): Ticket
 		updateTicket(ticketInput: TicketInput): Ticket
@@ -176,6 +181,7 @@ export const typeDefs = gql`
 
 	type Query {
 		getUserInfo: User
+		getAllUsers: [User]
 		getSpecificBlogEntry(blogId:String!): BlogEntry
 		getRecentEntries: [BlogEntry]
 		getDeletedEntries: [BlogEntry]
