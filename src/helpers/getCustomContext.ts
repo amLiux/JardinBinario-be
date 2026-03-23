@@ -1,8 +1,12 @@
-import { Request } from "express";
+import { IncomingMessage } from "http";
 import { v4 } from "uuid";
 import { CustomContext, TaggedContext } from "../types/sharedTypes";
 import { verifyJWT } from "./authFunctions";
 import { Errors, generateErrorObject } from "./Logger";
+
+interface ApolloRequest extends IncomingMessage {
+  body?: any;
+}
 
 const queriesThatDontRequireAuthentication = [
   "authenticate",
@@ -58,7 +62,7 @@ const getQueryName = (body: any): string => {
 };
 
 export const getCustomContext = async (
-  req: Request,
+  req: ApolloRequest,
   gridFs: any
 ): Promise<CustomContext | TaggedContext> => {
   const token = req.headers?.["authorization"] || "";

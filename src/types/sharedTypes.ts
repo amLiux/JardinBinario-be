@@ -1,5 +1,5 @@
 import { Document, ObjectId } from 'mongoose';
-import { Context } from 'apollo-server-core';
+import { BaseContext } from '@apollo/server';
 
 export interface ServerStatus {
 	connected: boolean;
@@ -21,7 +21,7 @@ export interface User {
 	active: boolean;
 	tempPassword?: string;
 	tempPasswordTime?: string;
-	checkPassword: (password:User['password'] | User['tempPassword'], isTempPassword?:boolean) => boolean;
+	checkPassword: (password: User['password'] | User['tempPassword'], isTempPassword?: boolean) => boolean;
 	save: () => Promise<User>
 }
 export interface BlogEntry extends Document {
@@ -59,11 +59,11 @@ export interface DeletedBlogEntry extends BlogEntry {
 	deleteIn: string;
 }
 
-export interface CustomContext extends TaggedContext{
+export interface CustomContext extends TaggedContext {
 	User: User;
 }
 
-export interface TaggedContext extends Context {
+export interface TaggedContext extends BaseContext {
 	requestId: string;
 	query: string;
 	gridFs: any;
