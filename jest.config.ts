@@ -12,7 +12,10 @@ const config: InitialOptionsTsJest = {
 	},
 	testPathIgnorePatterns: ["/node_modules/", "/dist/", "/lib/", "/build/"],
 	verbose: true,
-	testURL: "http://localhost/"
+	testEnvironment: 'jest-environment-jsdom',
+	testEnvironmentOptions: {
+		url: 'http://localhost',
+	},
 };
 
 export default config;
