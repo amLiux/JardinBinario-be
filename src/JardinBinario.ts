@@ -1,10 +1,19 @@
 import 'dotenv/config';
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer, BaseContext } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
 import { typeDefs } from './gql/schema';
 import { resolvers } from './gql/resolvers';
 import { dbConnection } from './db';
-import { ServerStatus } from './types/sharedTypes';
+import { ServerStatus, User } from './types/sharedTypes';
 import { getCustomContext } from './helpers/getCustomContext';
+
+
+interface CustomContext extends BaseContext {
+	User?: User;
+	requestId?: string;
+	query?: string;
+	gridFs?: any;
+}
 
 export class JardinBinarioServer {
 
@@ -18,26 +27,30 @@ export class JardinBinarioServer {
 	private async init(): Promise<void> {
 		this.gridFs = await dbConnection();
 
-		this.app = new ApolloServer({
+		this.app = new ApolloServer<CustomContext>({
 			typeDefs,
 			resolvers,
-			// TODO start planning on injecting locale from next on getCustomContext to localize the backend messages sent to front-end
-			context: async ({ req }) => {
-				try {
-					const customContext = await getCustomContext(req, this.gridFs);
-					return { ...customContext };
-				} catch(err) {
-					const error = err as Error;
-					throw new Error(error.message);
-				}
-			}
 		});
 	}
 
 	public async listen(): Promise<ServerStatus> {
 		try {
 			await this.init();
-			const { url } = await this.app.listen(process.env.PORT || 4000);
+
+			const { url } = await startStandaloneServer(this.app, {
+				listen: { port: Number(process.env.PORT) || 4000 },
+				context: async ({ req }) => {
+					try {
+						// TODO start planning on injecting locale from next on getCustomContext to localize the backend messages sent to front-end
+						const customContext = await getCustomContext(req, this.gridFs);
+						return { ...customContext };
+					} catch (err) {
+						const error = err as Error;
+						throw new Error(error.message);
+					}
+				}
+			});
+
 			return {
 				message: `Listening on: ${url}`,
 				connected: true,
