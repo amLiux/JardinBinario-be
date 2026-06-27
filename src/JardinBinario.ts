@@ -12,20 +12,18 @@ interface CustomContext extends BaseContext {
 	User?: User;
 	requestId?: string;
 	query?: string;
-	gridFs?: any;
 }
 
 export class JardinBinarioServer {
 
 	private app!: ApolloServer;
-	private gridFs!: any;
 
 	public constructor() {
 		// No es necesario realizar una inicialización aquí
 	}
 
 	private async init(): Promise<void> {
-		this.gridFs = await dbConnection();
+		await dbConnection();
 
 		this.app = new ApolloServer<CustomContext>({
 			typeDefs,
@@ -41,8 +39,7 @@ export class JardinBinarioServer {
 				listen: { port: Number(process.env.PORT) || 4000 },
 				context: async ({ req }) => {
 					try {
-						// TODO start planning on injecting locale from next on getCustomContext to localize the backend messages sent to front-end
-						const customContext = await getCustomContext(req, this.gridFs);
+						const customContext = await getCustomContext(req);
 						return { ...customContext };
 					} catch (err) {
 						const error = err as Error;
