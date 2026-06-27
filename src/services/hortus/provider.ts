@@ -8,11 +8,12 @@ import type {
   HCRegisterResponse,
 } from "./types"
 
-const BASE_URL = process.env.HORTUS_CLAVIS_URL || "https://hortusclavis-production.up.railway.app"
+const BASE_URL = process.env.HORTUS_CLAVIS_URL
 const VERIFY_CACHE_TTL = 5 * 60 * 1000
 const verifyCache = new Cache<HCVerifyResponse>(VERIFY_CACHE_TTL)
 
 function buildClient() {
+  if (!BASE_URL) throw new HortusError("HORTUS_CLAVIS_URL not set", undefined, true)
   return axios.create({
     baseURL: BASE_URL,
     timeout: 5000,
