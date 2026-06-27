@@ -60,12 +60,11 @@ const getQueryName = (body: any): string => {
 
 export const getCustomContext = async (
   req: ApolloRequest,
-  gridFs: any
 ): Promise<CustomContext | TaggedContext> => {
   const token = req.headers?.["authorization"] || "";
   const tokenWithoutBearer = token.replace("Bearer", "").trim();
   const query = req.body?.operationName || getQueryName(req.body);
-  const taggedContext = initContextTagging(query, gridFs);
+  const taggedContext = initContextTagging(query);
 
   if (queriesThatDontRequireAuthentication.includes(query.toLowerCase()))
     return taggedContext;
@@ -103,12 +102,11 @@ export const getCustomContext = async (
   }
 };
 
-const initContextTagging = (query: string, gridFs: any): TaggedContext => {
+const initContextTagging = (query: string): TaggedContext => {
   const requestId = v4();
 
   return {
     requestId,
     query,
-    gridFs,
   };
 };

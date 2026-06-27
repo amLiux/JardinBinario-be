@@ -66,7 +66,6 @@ export interface CustomContext extends TaggedContext {
 export interface TaggedContext extends BaseContext {
 	requestId: string;
 	query: string;
-	gridFs: any;
 }
 
 export interface UserDetails {
