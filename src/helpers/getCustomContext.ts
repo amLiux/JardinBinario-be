@@ -1,9 +1,9 @@
 import { IncomingMessage } from "http";
 import { v4 } from "uuid";
 import { CustomContext, TaggedContext } from "../types/sharedTypes";
-import { verifyJWT } from "./authFunctions";
 import { Errors, generateErrorObject } from "./Logger";
 import { HortusProvider, HortusError } from "../services/hortus";
+import { LocalAuthProvider } from "../services/LocalAuthProvider";
 import { UserModel } from "../models/User";
 
 interface ApolloRequest extends IncomingMessage {
@@ -94,27 +94,13 @@ export const getCustomContext = async (
   } catch (err) {
     if (err instanceof HortusError && err.isNetworkError) {
       try {
-        const User = verifyJWT(tokenWithoutBearer);
-
-        if (!User) {
-          throw await generateErrorObject(
-            Errors.UNKOWN_USER,
-            "Not a valid user",
-            taggedContext
-          );
-        }
-
-        return {
-          User,
-          ...taggedContext,
-        };
+        const User = LocalAuthProvider.verify(tokenWithoutBearer);
+        return { User, ...taggedContext };
       } catch (jwtErr) {
         let error = jwtErr as Error;
-
         if (error.message === "jwt expired") {
           error = "Session expired." as any;
         }
-
         throw await generateErrorObject(
           Errors.INTERNAL_SERVER_ERROR,
           String(error),
