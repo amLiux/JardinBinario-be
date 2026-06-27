@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { CustomContext, TaggedContext } from "../types/sharedTypes";
 import { verifyJWT } from "./authFunctions";
 import { Errors, generateErrorObject } from "./Logger";
-import { HortusProvider, HortusError } from "../services/HortusProvider";
+import { HortusProvider, HortusError } from "../services/hortus";
 import { UserModel } from "../models/User";
 
 interface ApolloRequest extends IncomingMessage {

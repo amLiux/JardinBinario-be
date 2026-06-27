@@ -7,7 +7,7 @@ import { CustomContext, Token, User } from "../types/sharedTypes";
 import { notifyUserAboutForgotPassword } from "../helpers/SMTP";
 import { getAllUsers } from "../helpers/getAllUsers";
 import { toggleActive } from "../helpers/toggleActive";
-import { HortusProvider, HortusError } from "../services/HortusProvider";
+import { HortusProvider, HortusError } from "../services/hortus";
 
 interface AuthInput {
   authInput: {

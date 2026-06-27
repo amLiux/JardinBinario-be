@@ -32,7 +32,6 @@ Modes:
 - Service: `jardinbinario` (already registered)
 - Actions: blog:read, blog:write, ticket:read, ticket:write, newsletter:read, metrics:read, metrics:write, user:read, user:write, user:admin
 - Roles: admin (all actions), user (non-admin actions)
-- Admin: admin@jardinbinario.com / admin
 
 ### Integration Points
 - `src/controllers/Auth.controller.ts` — replace `generateJWT` with `HortusProvider.login`
