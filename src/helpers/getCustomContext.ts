@@ -78,15 +78,13 @@ export const getCustomContext = async (
   try {
     const result = await HortusProvider.verify(tokenWithoutBearer);
 
-    let User = await UserModel.findOne({ email: result.user.email });
+    const User = await UserModel.findOne({ email: result.user.email });
     if (!User) {
-      User = await new UserModel({
-        name: result.user.name,
-        email: result.user.email,
-        lastName: "",
-        avatar: "",
-        password: v4(),
-      }).save();
+      throw await generateErrorObject(
+        Errors.UNKOWN_USER,
+        `User ${result.user.email} not found locally. Sync required.`,
+        taggedContext
+      );
     }
 
     return {

@@ -8,6 +8,7 @@ import { notifyUserAboutForgotPassword } from "../helpers/SMTP";
 import { getAllUsers } from "../helpers/getAllUsers";
 import { toggleActive } from "../helpers/toggleActive";
 import { HortusProvider, HortusError } from "../services/hortus";
+import { isNotJBDomain } from "../helpers/validateEmail";
 
 interface AuthInput {
   authInput: {
@@ -73,9 +74,9 @@ export const AuthResolvers = {
       { userInput }: UserInput,
       ctx: CustomContext
     ): Promise<User> => {
-      const { email } = userInput;
+      const { email, name, lastName, password, avatar } = userInput;
 
-      if (!/@jardinbinario.com\s*$/.test(email)) {
+      if (isNotJBDomain(email)) {
         throw await generateErrorObject(
           Errors.NOT_VALID_DOMAIN,
           `${email} does not have a valid domain.`,
@@ -91,6 +92,24 @@ export const AuthResolvers = {
           `${email} it's already in use.`,
           ctx
         );
+      }
+
+      try {
+        await HortusProvider.register({
+          email,
+          password: password as string,
+          name,
+          last_name: lastName,
+          avatar: avatar as string,
+        });
+      } catch (err) {
+        if (!(err instanceof HortusError && err.isNetworkError)) {
+          throw await generateErrorObject(
+            Errors.INTERNAL_SERVER_ERROR,
+            err instanceof Error ? err.message : String(err),
+            ctx
+          );
+        }
       }
 
       try {
@@ -110,7 +129,7 @@ export const AuthResolvers = {
       ctx: CustomContext
     ): Promise<User> => {
 
-      if (!/@jardinbinario.com\s*$/.test(email)) {
+      if (isNotJBDomain(email)) {
         throw await generateErrorObject(
           Errors.NOT_VALID_DOMAIN,
           `${email} does not have a valid domain.`,
