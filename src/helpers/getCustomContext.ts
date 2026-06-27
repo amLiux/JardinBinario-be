@@ -21,10 +21,7 @@ const queriesThatDontRequireAuthentication = [
   "getallentriesids",
   "updateblogmetrics",
   "newuserdetailsentry",
-  "getmetric",
-  "getimagebyprompt",
-  "getimagebyid",
-  "getallimagesofday",
+	"getmetric",
 ];
 
 const getQueryName = (body: any): string => {

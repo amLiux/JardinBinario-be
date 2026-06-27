@@ -22,7 +22,6 @@
   "dependencies": {
     "@apollo/server": "^5.4.0",
     "axios": "^1.13.6",
-    "bad-words-es": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.0",
     "graphql": "^16.13.1",

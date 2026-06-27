@@ -4,8 +4,6 @@ import { AuthResolvers } from '../controllers/Auth.controller';
 import { TicketResolvers } from '../controllers/Ticket.controller';
 import { NewsletterResolvers } from '../controllers/Newsletter.controller';
 import { MetricsResolvers } from '../controllers/Metrics.controller';
-// import { AIResolvers } from '../controllers/AI.controller';
-
 export const resolvers = {
 	JSON: GraphQLJSON,
 	JSONObject: GraphQLJSONObject,
@@ -14,7 +12,6 @@ export const resolvers = {
 		...AuthResolvers.Query,
 		...BlogResolvers.Query,
 		...MetricsResolvers.Query,
-		// ...AIResolvers.Query,
 	},
 	Mutation: {
 		...TicketResolvers.Mutation,

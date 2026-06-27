@@ -32,28 +32,6 @@ export const typeDefs = gql`
 		token: String
 	}
 
-	input ImageInput {
-		url: String!
-		position: String!
-	}
-
-	type Image {
-		url: String!
-		position: String!
-	}
-
-	input ParagraphInput {
-		subtitle: String
-		image: ImageInput
-		text: String!
-	}
-	
-	type Paragraph {
-		subtitle: String
-		image: Image
-		text: String!
-	}
-
 	type Author {
 		_id: ID
 		name: String
@@ -141,17 +119,6 @@ export const typeDefs = gql`
 		userAgent: String!
 	}
 
-	type ImageData {
-		prompt: String!
-		img: Image!
-		date: String!
-	}
-
-	type Image {
-		buffer: String!
-		contentType: String!
-	}
-
 	type Mutation {
 		# Authentication
 		newUser(userInput: UserInput): User
@@ -192,8 +159,5 @@ export const typeDefs = gql`
 		getOpenTickets: [Ticket]
 		getSubscribedEmails: [NewsletterEntry]
 		getMetric(metricName:String!):Metrics
-		getImageByPrompt(prompt:String!):ImageData!
-		getImageById(imageId:String!):ImageData!
-		getAllImagesOfDay:[ImageData]!
 	}
 `;

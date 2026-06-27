@@ -78,10 +78,3 @@ export interface UserDetails {
 	os: string;
 }
 
-export interface ImageEntry {
-	id: ObjectId;
-	prompt: string;
-	date: Date;
-	fileId: ObjectId;
-	contentType: string;
-}
