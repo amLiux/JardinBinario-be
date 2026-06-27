@@ -3,6 +3,8 @@ import { v4 } from "uuid";
 import { CustomContext, TaggedContext } from "../types/sharedTypes";
 import { verifyJWT } from "./authFunctions";
 import { Errors, generateErrorObject } from "./Logger";
+import { HortusProvider, HortusError } from "../services/HortusProvider";
+import { UserModel } from "../models/User";
 
 interface ApolloRequest extends IncomingMessage {
   body?: any;
@@ -74,14 +76,17 @@ export const getCustomContext = async (
     throw new Error("A verification token is required.");
 
   try {
-    const User = verifyJWT(tokenWithoutBearer);
+    const result = await HortusProvider.verify(tokenWithoutBearer);
 
+    let User = await UserModel.findOne({ email: result.user.email });
     if (!User) {
-      throw await generateErrorObject(
-        Errors.UNKOWN_USER,
-        "Not a valid user",
-        taggedContext
-      );
+      User = await new UserModel({
+        name: result.user.name,
+        email: result.user.email,
+        lastName: "",
+        avatar: "",
+        password: v4(),
+      }).save();
     }
 
     return {
@@ -89,15 +94,40 @@ export const getCustomContext = async (
       ...taggedContext,
     };
   } catch (err) {
-    let error = err as Error;
+    if (err instanceof HortusError && err.isNetworkError) {
+      try {
+        const User = verifyJWT(tokenWithoutBearer);
 
-    if (error.message === "jwt expired") {
-      error = "Session expired." as any;
+        if (!User) {
+          throw await generateErrorObject(
+            Errors.UNKOWN_USER,
+            "Not a valid user",
+            taggedContext
+          );
+        }
+
+        return {
+          User,
+          ...taggedContext,
+        };
+      } catch (jwtErr) {
+        let error = jwtErr as Error;
+
+        if (error.message === "jwt expired") {
+          error = "Session expired." as any;
+        }
+
+        throw await generateErrorObject(
+          Errors.INTERNAL_SERVER_ERROR,
+          String(error),
+          taggedContext
+        );
+      }
     }
 
     throw await generateErrorObject(
       Errors.INTERNAL_SERVER_ERROR,
-      String(error),
+      err instanceof Error ? err.message : String(err),
       taggedContext
     );
   }

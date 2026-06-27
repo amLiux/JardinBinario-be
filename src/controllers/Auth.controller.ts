@@ -7,6 +7,7 @@ import { CustomContext, Token, User } from "../types/sharedTypes";
 import { notifyUserAboutForgotPassword } from "../helpers/SMTP";
 import { getAllUsers } from "../helpers/getAllUsers";
 import { toggleActive } from "../helpers/toggleActive";
+import { HortusProvider, HortusError } from "../services/HortusProvider";
 
 interface AuthInput {
   authInput: {
@@ -143,31 +144,45 @@ export const AuthResolvers = {
       ctx: CustomContext
     ): Promise<Token> => {
       const { email, password } = authInput;
-      const User = await findUserByEmail(email);
-
-      if (!User) {
-        throw await generateErrorObject(
-          Errors.UNKOWN_USER,
-          `A user for ${email} was not found.`,
-          ctx
-        );
-      }
-
-      if (!User.checkPassword(password)) {
-        throw await generateErrorObject(
-          Errors.WRONG_PASSWORD,
-          "Incorrect password.",
-          ctx
-        );
-      }
 
       try {
-        const token = generateJWT(User as User);
-        return { token };
+        const result = await HortusProvider.login(email, password as string);
+        return { token: result.access_token };
       } catch (err) {
+        if (err instanceof HortusError && (err.isNetworkError || err.statusCode === 401 || err.statusCode === 404)) {
+          const User = await findUserByEmail(email);
+
+          if (!User) {
+            throw await generateErrorObject(
+              Errors.UNKOWN_USER,
+              `A user for ${email} was not found.`,
+              ctx
+            );
+          }
+
+          if (!User.checkPassword(password)) {
+            throw await generateErrorObject(
+              Errors.WRONG_PASSWORD,
+              "Incorrect password.",
+              ctx
+            );
+          }
+
+          try {
+            const token = generateJWT(User as User);
+            return { token };
+          } catch (jwtErr) {
+            throw await generateErrorObject(
+              Errors.INTERNAL_SERVER_ERROR,
+              String(jwtErr),
+              ctx
+            );
+          }
+        }
+
         throw await generateErrorObject(
           Errors.INTERNAL_SERVER_ERROR,
-          String(err),
+          err instanceof Error ? err.message : String(err),
           ctx
         );
       }
