@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": [".opencode/skills/devcadence"]
+  },
+  "command": {
+    "devcadence": {
+      "template": ".opencode/commands/devcadence.md",
+      "description": "DevCadence protocol for structured development workflow"
+    },
+    "hortus-migrate": {
+      "template": ".opencode/commands/hortus-migrate.md",
+      "description": "Hortus Clavis auth migration workflow"
+    }
+  }
+}
