@@ -2,7 +2,14 @@ import { v4 } from "uuid";
 import { findUserByEmail } from "../helpers/findUserByEmail";
 import { Errors, generateErrorObject } from "../helpers/Logger";
 import { UserModel } from "../models/User";
-import { CustomContext, Token, User } from "../types/sharedTypes";
+import {
+	AuthInput,
+	CustomContext,
+	ForgotPasswordInput,
+	Token,
+	User,
+	UserInput
+} from "../types/sharedTypes";
 import { notifyUserAboutForgotPassword } from "../helpers/SMTP";
 import { getAllUsers } from "../helpers/getAllUsers";
 import { toggleActive } from "../helpers/toggleActive";
@@ -10,30 +17,6 @@ import { HortusProvider, HortusError } from "../services/hortus";
 import { LocalAuthProvider } from "../services/LocalAuthProvider";
 import { isNotJBDomain } from "../helpers/validateEmail";
 
-interface AuthInput {
-	authInput: {
-		email: User["email"];
-		password: User["password"];
-	};
-}
-
-interface UserInput {
-	userInput: {
-		name: User["name"];
-		email: User["email"];
-		lastName: User["lastName"];
-		password: User["password"];
-		avatar: User["avatar"];
-	};
-}
-interface ForgotPasswordInput {
-	forgotPasswordInput: {
-		email: User["email"];
-		otp: User["tempPassword"];
-		time: User["tempPasswordTime"];
-		newPassword: User["password"];
-	};
-}
 
 export const AuthResolvers = {
 	Query: {

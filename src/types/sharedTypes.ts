@@ -78,3 +78,29 @@ export interface UserDetails {
 	os: string;
 }
 
+export interface AuthInput {
+	authInput: {
+		email: User["email"];
+		password: User["password"];
+	};
+}
+
+export interface UserInput {
+	userInput: {
+		name: User["name"];
+		email: User["email"];
+		lastName: User["lastName"];
+		password: User["password"];
+		avatar: User["avatar"];
+	};
+}
+
+export interface ForgotPasswordInput {
+	forgotPasswordInput: {
+		email: User["email"];
+		otp: User["tempPassword"];
+		time: User["tempPasswordTime"];
+		newPassword: User["password"];
+	};
+}
+
